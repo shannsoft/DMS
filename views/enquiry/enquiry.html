@@ -1,0 +1,53 @@
+<section class="content-header">
+  <h1 class="pull-left">
+    Enquiry List
+    <small>advanced tables</small>
+  </h1>
+  <button class="btn btn-primary pull-right" ui-sref="new-enquiry"><i class="fa fa-plus"></i> New Enquiry</button>
+</section>
+<section class="content" ng-init="loadEnquiry()">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Available client list</h3>
+        </div>
+        <div class="box-body">
+          <table ng-table="tableParams" class="table table-bordered table-hover">
+            <tr ng-repeat="row in $data">
+              <td data-title="'Sl No'" >{{ $index + 1}}</td>
+              <td data-title="'Client Name'" sortable="'org_name'">{{row.org_name}}</td>
+              <td data-title="'Enquiry Date'" sortable="'enq_date'">{{row.enq_date | dateformat}}</td>
+              <td data-title="'Due Date'" sortable="'due_date'">{{row.due_date | dateformat}}</td>
+              <td data-title="'Reference No'" sortable="'ref_no'">{{row.ref_no}}</td>
+              <td data-title="'Status'" sortable="'status'">{{row.status}}</td>
+              <td data-title="'Remarks'" sortable="'remarks'">{{row.remarks}}</td>
+              <td data-title="'Action'" >
+              	<div class="btn-group">
+                  <button type="button" class="btn btn-success"><i class="fa fa-eye"></i></button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-warning"><i class="fa fa-edit"></i></button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                </div>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-info"><i class="fa fa-align-left"></i></button>
+                  <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="" ui-sref="new-quotation({enqId:row.enq_id})">New Quatation</a></li>
+                    <!-- <li><a href="" >Purchase order</a></li> -->
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

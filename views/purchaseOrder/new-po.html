@@ -1,0 +1,87 @@
+<section class="content-header m-b-40">
+	<h1>
+	  Add purchase order details
+	  <small>Preview</small>
+	</h1>
+</section>
+<section class="content" ng-init="loadQuotDetails()">
+  <div class="row">
+   <div class="col-md-12">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Create Purchase Order</h3>
+            </div>
+            <form class="form-horizontal" name="quot_frm">
+              <div class="box-body">
+                <div class="form-group">
+                  <div class="col-sm-4">
+                   <label for="text" class="control-label">Client Name: </label> <span>{{quotaionDetails.org_name}}</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="text" class="control-label">Enq Ref No: </label> <span>{{quotaionDetails.enq_ref}}</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="text" class="control-label">Enquiry Date: </label> <span>{{quotaionDetails.enq_date | dateformat}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-4">
+                   <label for="text" class="control-label">Quotation No: </label> <span>{{quotaionDetails.quot_ref}}</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="text" class="control-label">Quotation Date: </label> <span>{{quotaionDetails.quot_date | dateformat}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-md-4">
+                    <label>P.O No :</label>
+                    <input type="text" class="form-control" placeholder="Purchase Order No" ng-model="quotaionDetails.po_no" required>
+                  </div>
+                  <div class="col-md-4">
+                    <label>P.O Date :</label>
+                    <input type="date" class="form-control" placeholder="Purchase Order Date" ng-model="quotaionDetails.date" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-12">
+                      <label>Material :</label>
+                      <table class="table table-bordered"> 
+                      <thead> 
+                        <tr> 
+                          <th>SL No</th> 
+                          <th>Item</th> 
+                          <th>Quantity</th> 
+                          <th>UOM</th> 
+                          <th>Price</th> 
+                          <th>Disc(%)</th> 
+                          <th>Net Amount</th> 
+                          <th>Delivery Date</th> 
+                        </tr> 
+                      </thead> 
+                      <tbody> 
+                          <tr ng-repeat="item in quotaionDetails.itemList"> 
+                            <td>{{$index+1}}</td> 
+                            <td>{{item.item_name}}</td> 
+                            <td><input type="number" class="form-control" placeholder="Quantity" ng-model="item.quantity" required ng-change="calculatePrice(item)"></td> 
+                            <td>{{item.uom}}</td> 
+                            <td>{{item.price}}</td> 
+                            <td>{{item.discount}} %</td> 
+                            <td>{{item.tot_price}}</td> 
+                            <td><input type="date" class="form-control" placeholder="Exp Date" ng-model="item.date" required></td> 
+                          </tr> 
+                      </tbody> 
+                      </table>
+                  </div>
+                </div>
+
+              </div>
+              <div class="box-footer">
+                <button type="submit" class="btn btn-default" ui-sref="enquiry">Cancel</button>
+                <button type="submit" ng-disabled="quot_frm.$invalid" class="btn btn-info pull-right" ng-click="addPurchaseOrder()">Submit</button>
+              </div>
+            </form>
+          </div>
+         
+        </div>
+  </div>
+ </section>

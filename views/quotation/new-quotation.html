@@ -1,0 +1,78 @@
+<section class="content-header m-b-40">
+	<h1>
+	  Give a Quotation
+	  <small>Preview</small>
+	</h1>
+</section>
+<section class="content" ng-init="loadEnqDetails()">
+  <div class="row">
+   <div class="col-md-12">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Create Quotation</h3>
+            </div>
+            <form class="form-horizontal" name="quot_frm">
+              <div class="box-body">
+                <div class="form-group">
+                  <div class="col-sm-4">
+                   <label for="text" class="control-label">Client Name: </label> <span>{{enquiryDetails.org_name}}</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="text" class="control-label">Ref No: </label> <span>{{enquiryDetails.ref_no}}</span>
+                  </div>
+                  <div class="col-sm-4">
+                    <label for="text" class="control-label">Enquiry Date: </label> <span>{{enquiryDetails.enq_date | dateformat}}</span>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-sm-2">Quotation Date:</label>
+                    <div class="col-sm-6">
+                      <input type="date" class="form-control" name="date" placeholder="Quotation date" ng-model="enquiryDetails.date" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div class="col-sm-12">
+                      <label>Material :</label>
+                      <table class="table table-bordered"> 
+                      <thead> 
+                        <tr> 
+                          <th>SL No</th> 
+                          <th>Item</th> 
+                          <th>Quo</th> 
+                          <th>UOM</th> 
+                          <th>Price</th> 
+                          <th>Disc(%)</th> 
+                          <th>Net Amount</th> 
+                          <th>Valid upto</th> 
+                          <th>Description</th> 
+                        </tr> 
+                      </thead> 
+                      <tbody> 
+                          <tr ng-repeat="item in enquiryDetails.itemList"> 
+                            <td>{{$index+1}}</td> 
+                            <td>{{item.item_name}}</td> 
+                            <td>{{item.quantity}}</td> 
+                            <td>{{item.uom}}</td> 
+                            <td><input type="number" class="form-control" placeholder="Price" ng-model="item.price" required></td> 
+                            <td><input type="number" class="form-control" placeholder="Discount" ng-model="item.discount" required></td> 
+                            <td><input type="number" class="form-control" placeholder="Total" ng-model="item.total" required></td> 
+                            <td><input type="date" class="form-control" placeholder="Exp Date" ng-model="item.date" required></td> 
+                            <td width="15%"><textarea class="form-control" placeholder="Desc.." ng-model="item.description"></textarea></td> 
+                          </tr> 
+                      </tbody> 
+                      </table>
+                  </div>
+                </div>
+
+              </div>
+              <div class="box-footer">
+                <button type="submit" class="btn btn-default" ui-sref="enquiry">Cancel</button>
+                <button type="submit" ng-disabled="quot_frm.$invalid" class="btn btn-info pull-right" ng-click="addQuation()">Submit</button>
+              </div>
+            </form>
+          </div>
+         
+        </div>
+  </div>
+ </section>

@@ -1,0 +1,47 @@
+<aside class="main-sidebar">
+  <section class="sidebar">
+    <div class="user-panel">
+      <div class="pull-left image">
+        <img src="dist/img/tekno-sm-logo.png" alt="User Image">
+      </div>
+      <div class="pull-left info">
+        <p>{{profile.first_name+' '+profile.last_name}}</p>
+        <a href=""><i class="fa fa-circle text-success"></i> Online</a>
+      </div>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="header">MAIN NAVIGATION</li>
+      <li class="treeview" ng-class="{'active':stateName == 'dashboard'}">
+        <a href="" ui-sref="dashboard">
+          <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="treeview" ng-class="{'active':stateName == 'client' || stateName == 'new-client' || stateName == 'client-details'}">
+        <a href="" ui-sref="client">
+          <i class="fa fa-users"></i>
+          <span>Clients</span>
+        </a>
+      </li>
+      <!-- <li>
+        <a href="" ui-sref="users">
+          <i class="fa fa-th"></i> <span>User Management</span>
+        </a>
+      </li> -->
+      <li ng-class="{'active':stateName == 'enquiry' || stateName == 'new-enquiry'}">
+        <a href="" ui-sref="enquiry" >
+          <i class="fa fa-files-o"></i> <span>Enquiry</span>
+        </a>
+      </li>
+      <li class="treeview" ng-class="{'active':stateName == 'quotation-list' || stateName == 'new-quotation'}">
+        <a href="" ui-sref="quotation-list">
+          <i class="fa fa-building-o"></i><span>Quotations</span>
+        </a>
+      </li>
+      <li class="treeview" ng-class="{'active':stateName == 'purchase-order'}">
+        <a href="" ui-sref="buildingPlan">
+          <i class="fa fa-building-o"></i><span>Purchase Order</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</aside>

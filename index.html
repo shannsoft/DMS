@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="doc_app">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Document Management</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    
+    <link rel="stylesheet" href="dist/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dist/css/font-awesome.min.css">
+    <link rel="stylesheet" href="dist/css/style.css">
+    <link rel="stylesheet" href="dist/css/ng-table.min.css">
+    <link rel="stylesheet" href="dist/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="dist/js/date-picker/angular-datepicker.min.css">
+    
+    <script src="dist/js/angular/angular.js"></script>
+    <script src="dist/js/angular/angular-ui-router.js"></script>
+    <script src="dist/js/angular/angular-resource.js"></script>
+    <script src="dist/js/angular/ng-animate.js"></script>
+    <script src="dist/js/angular/ui-bootstrap-tpls-0.14.3.min.js"></script>
+    <script src="dist/js/angular/ngStorage.min.js"></script>
+    <script src="dist/js/angular/ng-table.min.js"></script>
+    <script src="dist/js/date-picker/angular-datepicker.min.js"></script>
+    <script src="dist/js/date-picker/moment.js"></script>
+
+    <script src="main_app.js"></script>
+      <script src="services/service.js"></script>
+
+    <script src="directive/directive.js"></script>
+
+    <script src="controller/main_controller.js"></script>
+    <script src="controller/client_controller.js"></script>
+    <script src="controller/quotation_controller.js"></script>
+
+    <script src="filter.js"></script>
+  
+  </head>
+  <body class="hold-transition skin-green sidebar-mini" ng-class="{'login-page':!is_loggedin}" ng-controller="Main_Controller" ng-init="getUseDetails()">
+    <div ng-repeat="alert in alerts" class="alert alert-{{alert.type}}">
+    {{alert.msg}}
+  </div>
+    <div id="preloader" ng-if="showPreloader">
+      <div id="status"><i class="fa fa-spinner fa-spin"></i></div>
+    </div>
+    <div class="" ng-if="!is_loggedin">
+      <div ui-view></div>
+    </div>
+    <div class="" ng-if="is_loggedin">
+      <div class="wrapper" >
+        <div ng-include="'views/header.html'"></div>
+        <div ng-include="'views/sidebar.html'"></div>
+        <div class="content-wrapper" update-height>
+          <div ui-view></div>
+        </div>
+        <div ng-include="'views/footer.html'"></div>
+      </div>
+    </div>
+    <script src="plugins/jQuery/jQuery-2.2.0.min.js"></script>
+    <script src="dist/bootstrap/js/bootstrap.min.js"></script>
+    <script src="dist/js/app.js"></script>
+  </body>
+</html>

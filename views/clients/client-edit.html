@@ -1,0 +1,75 @@
+<section class="content-header m-b-40">
+  <h1 class="pull-left">
+   Client Update
+    <small>advanced tables</small>
+  </h1>
+</section>
+<section class="content" ng-init="loadClientDetails();">
+  	<div class="row">
+	   	<div class="col-md-8 col-sm-offset-2">
+	      	<div class="box box-info">
+		        <div class="box-header with-border">
+		          <h3 class="box-title">Update client details</h3>
+		        </div>
+		        <form class="form-horizontal" name="client_form">
+		          	<div class="box-body">
+			            <div class="form-group" ng-class="{'has-error': client_form.client_name.$touched && client_form.client_name.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">Client Name *</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="client_name" placeholder="Client Name" ng-model="client.org_name" required>
+			                <span ng-if="client_form.client_name.$touched && client_form.client_name.$invalid" class="help-block">Please enter client name</span>
+			              </div>
+			            </div>
+			            <div class="form-group" ng-class="{'has-error': client_form.contact_person.$touched && client_form.contact_person.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">Contact Person *</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="contact_person" placeholder="Contact Person" ng-model="client.contact_person" required>
+			                <span ng-if="client_form.contact_person.$touched && client_form.contact_person.$invalid" class="help-block">Please enter contact person name</span>
+			              </div>
+			            </div>
+			            <div class="form-group" ng-class="{'has-error': client_form.email.$touched && client_form.email.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">Email *</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="email" placeholder="Client Email" ng-model="client.email" required ng-pattern="/^[a-z]+[a-z0-9._]+@[a-z]+\.[a-z.]{2,5}$/">
+			                 <span ng-if="client_form.email.$touched && client_form.email.$error.required" class="help-block">Please enter email address</span>
+			                 <span ng-if="client_form.email.$touched && client_form.email.$error.pattern" class="help-block">Please enter valid email</span>
+			              </div>
+			            </div>
+			            <div class="form-group" ng-class="{'has-error': client_form.mobile.$touched && client_form.mobile.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">Mobile *</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="mobile" placeholder="Mobile" ng-model="client.mobile" required ng-pattern="/^[0-9]{10,12}$/">
+			                <span ng-if="client_form.mobile.$touched && client_form.mobile.$error.required" class="help-block">Please enter mobile number</span> 
+			                <span ng-if="client_form.mobile.$touched && client_form.mobile.$error.pattern" class="help-block">This is not a valid number</span>
+			              </div>
+			            </div>
+			            <div class="form-group" ng-class="{'has-error': client_form.phone.$touched && client_form.phone.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">Phone</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="phone" placeholder="Phone" ng-model="client.phone" ng-pattern="/^[0-9]{10,12}$/">
+			                <span ng-if="client_form.phone.$touched && client_form.phone.$error.pattern" class="help-block">This is not a valid number</span>
+			              </div>
+			            </div>
+			            <div class="form-group">
+			              <label for="text" class="col-sm-3 control-label">Web Site</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="web" placeholder="Web site" ng-model="client.web">
+			              </div>
+			            </div>
+			            <div class="form-group" ng-class="{'has-error': client_form.gstn.$touched && client_form.gstn.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">GSTN No *</label>
+			              <div class="col-sm-9">
+			                <input type="text" class="form-control" name="gstn" placeholder="GSTN No" ng-model="client.gstn_no" required>
+			                <span ng-if="client_form.gstn.$touched && client_form.gstn.$invalid" class="help-block">GSTN No should not be blank</span>
+			              </div>
+			            </div>
+		            </div>
+	              	<div class="box-footer">
+		                <button type="submit" class="btn btn-default" ui-sref="client">Cancel</button>
+		                <button type="submit" ng-disabled="client_form.$invalid" class="btn btn-info pull-right" ng-click="updateClientDetails()">Submit</button>
+	              	</div>
+		        </form>
+	        </div>
+	    </div>
+	</div>
+</section>
