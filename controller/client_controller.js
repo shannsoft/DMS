@@ -44,6 +44,9 @@ app.controller('ClientController',function($scope,$rootScope,userService,Util,Ng
         $rootScope.showPreloader = false;
       })
     }
+    $scope.clientDetails = function(){
+
+    }
     $scope.addItem = function(){
       var obj = {name:'',qua:'',uom:''};
       $scope.enq.itemList.push(obj);
@@ -57,10 +60,10 @@ app.controller('ClientController',function($scope,$rootScope,userService,Util,Ng
     $scope.loadClientDetails = function(){
       var client_id = $stateParams.clientId;
       $rootScope.showPreloader = true;
-      userService.loadClientDetails(client_id).then(function(response){
+      userService.clientDetails(client_id).then(function(response){
         $rootScope.showPreloader = false;
         if(response.data.statusCode = 200){
-          $scope.client = response.data.data[0];
+          $scope.client = response.data.data;
         }
       })
     }

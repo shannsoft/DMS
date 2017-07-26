@@ -1,4 +1,4 @@
-app.controller("QuotController", function($scope,$rootScope,userService,$stateParams,Util,NgTableParams,$timeout) {
+app.controller("QuotController", function($scope,$rootScope,userService,$stateParams,Util,NgTableParams,$timeout,$uibModal) {
 	/*******************************************************/
   	/*******THIS FUNCTION IS USED TO LOAD ENQUIRY DET*******/
   	/*******************************************************/
@@ -122,14 +122,74 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
       angular.forEach($scope.quotaionDetails.itemList,function(item){
         item.delivery_date = moment(item.date).format('YYYY-MM-DD')
       })
-      console.log($scope.quotaionDetails);
+      $rootScope.showPreloader = true;
       userService.addPurchaseOrder($scope.quotaionDetails).then(function(response){
+        $rootScope.showPreloader = false;
         if(response.data.statusCode == 200){
           Util.alertMessage('success',response.data.message);
         }
         else{
           Util.alertMessage('danger',response.data.message);
         }
+      },function(error){
+        $rootScope.showPreloader = false;
+      })
+    }
+    /*******************************************************/
+    /*******THIS FUNCTION IS USED OPEN DELETE MODAL*********/
+    /*******************************************************/
+    $scope.openQuotationDelete = function(quotaion){
+      $scope.modalInstance = $uibModal.open({
+       animation: true,
+       templateUrl: 'views/modals/quot-delete-modal.html',
+       controller: 'QuotModalCtrl',
+       size: 'sm',
+       resolve: {
+         deleteQuotation: function () {
+           return $scope.deleteQuotation;
+         },
+         quotID:function () {
+           return quotaion.quot_id;
+         }
+       }
+      })
+    }
+    $scope.deleteQuotation = function(quotID){
+      $rootScope.showPreloader = true;
+      userService.deleteQuot(quotID).then(function(response){
+        $rootScope.showPreloader = false;
+        if(response.data.statusCode == 200){
+          Util.alertMessage('success',response.data.message);
+          $scope.getQuotationList();
+        }
+        else{
+          Util.alertMessage('danger',response.data.message);
+        }
+      },function(error){
+        $rootScope.showPreloader = false;
+      })
+    }
+    $scope.loadQuotHistoryDetails = function(){
+      var his_id = $stateParams.historyId;
+      $rootScope.showPreloader = true;
+      userService.getQuotHisDetails(his_id).then(function(response){
+        $rootScope.showPreloader = false;
+        if(response.data.statusCode = 200){
+          $scope.quotaionHistory = response.data.data;  
+          $scope.historyQuot = new NgTableParams();
+          $scope.historyQuot.settings({
+              dataset: $scope.quotaionHistory.itemList
+          })
+        }
       })
     }
 })
+app.controller('QuotModalCtrl', function ($scope, $uibModalInstance,deleteQuotation,quotID) {
+    $scope.ok = function () {
+        deleteQuotation(quotID);
+        $uibModalInstance.close();
+    };
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+});

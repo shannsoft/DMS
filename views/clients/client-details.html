@@ -1,4 +1,4 @@
-<section class="content-header" ng-init="getClientList()">
+<section class="content-header" ng-init="loadClientDetails()">
   <h1>
     Client Details
     <small>advanced tables</small>
@@ -12,20 +12,20 @@
             <div class="box-body box-profile">
               <img class="profile-user-img img-responsive img-circle" src="dist/img/user4-128x128.jpg" alt="User profile picture">
 
-              <h3 class="profile-username text-center">Nina Mcintire</h3>
+              <h3 class="profile-username text-center">{{client.org_name}}</h3>
 
               <ul class="list-group list-group-unbordered">
                 <li class="list-group-item">
-                  <b>Contact :</b> <span>Santosh</span>
+                  <b>Contact :</b> <span>{{client.contact_person}}</span>
                 </li>
                 <li class="list-group-item">
-                  <b>Email :</b> <span>santoshmajhi99@gmail.com</span>
+                  <b>Email :</b> <span>{{client.email}}</span>
                 </li>
                 <li class="list-group-item">
-                  <b>Mobile :</b> <span>+91 9078640778</span>
+                  <b>Mobile :</b> <span>{{client.mobile}}</span>
                 </li>
                 <li class="list-group-item">
-                  <b>GSTN no :</b> <span>11234566</span>
+                  <b>GSTN no :</b> <span>{{client.GSTN_No}}</span>
                 </li>
               </ul>
             </div>

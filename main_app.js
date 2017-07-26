@@ -92,6 +92,14 @@ app.config(function($stateProvider, $urlRouterProvider) {
       loggedout: checkLoggedout
     }
   })
+  .state('history-details', {
+    templateUrl: 'views/quotation/history-details.html',
+    url: '/history-details/:historyId',
+    controller:'QuotController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
   .state('quotation-update', {
     templateUrl: 'views/quotation/quotation-update.html',
     url: '/quotation-update/:quotId',

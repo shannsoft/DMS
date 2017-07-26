@@ -61,6 +61,16 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    clientDetails : function(id){
+      var response = $http({
+          method: 'GET',
+          url: CONFIG.HTTP_HOST+'?reqmethod=clientDetails&id='+id,
+          headers: {
+              'Accesstoken':localStorage.getItem('accessToken')
+          }
+      });
+      return response;
+    },
     updateClientDetails: function (data) {
       var _serializedData = $.param({"reqmethod": 'client', "client_data":data,"operation":'update'});
       var response = $http({
@@ -183,6 +193,26 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    getQuotHisDetails: function(id){
+      var response = $http({
+        method: 'GET',
+        url: CONFIG.HTTP_HOST+'?reqmethod=getQuotHistoryDetails&id='+id,
+        headers: {
+            'Accesstoken':localStorage.getItem('accessToken')
+        }
+      });
+      return response;
+    },
+    deleteQuot : function(id){
+      var response = $http({
+          method: 'GET',
+          url: CONFIG.HTTP_HOST+'?reqmethod=quotaionDelete&id='+id,
+          headers: {
+              'Accesstoken':localStorage.getItem('accessToken')
+          }
+      });
+      return response;
+    },
     addPurchaseOrder : function(data){
       var _serializedData = $.param({"reqmethod": 'createPurchaseOrder', "po_data":data});
       var response = $http({
@@ -200,9 +230,15 @@ app.factory("userService", function ($http,CONFIG) {
       var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserById&id="+id);
       return response;
     },
-    getUserDetails: function (token) {
-      var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserDetails&token="+token);
-      return response;
+    getUserDetails: function () {
+      var response = $http({
+        method: 'GET',
+        url: CONFIG.HTTP_HOST+'?reqmethod=getUserDetails',
+        headers: {
+            'Accesstoken':localStorage.getItem('accessToken')
+        }
+      });
+      return response
     },
     manageUser: function (data,option) {
       var _serializedData = $.param({"reqmethod": 'user',"operation":option, "user_data":data});

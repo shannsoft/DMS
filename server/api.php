@@ -269,6 +269,22 @@ header('Access-Control-Allow-Origin: *');
 				}
 			}
 		}
+		public function getUserDetails(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$token = $headers['Accesstoken'];
+				$sql = "SELECT * FROM ".self::usersTable." where token='$token'";
+				$rows = $this->executeGenericDQLQuery($sql);
+				$user = array();
+				$user['user_id'] = $rows[0]['user_id'];
+				$user['first_name'] = $rows[0]['first_name'];
+				$user['last_name'] = $rows[0]['last_name'];
+				$user['user_name'] = $rows[0]['user_name'];
+				$user['token'] = $rows[0]['token'];
+				$user['is_active'] = $rows[0]['is_active'];
+				$this->sendResponse(200,"success","",$user);
+			}
+		}
 		public function changePassword(){
 			if(isset($this->_request['token'])){
 				$token = $this->_request['token'];
@@ -708,6 +724,109 @@ header('Access-Control-Allow-Origin: *');
 						$this->sendResponse(200,'success','Purchase order added successfully');
 					}
 				}
+			}
+		}
+		public function quotaionDelete(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$quot_id = $this->_request['id'];
+				if(isset($this->_request['id'])){
+					$sql = "update ".self::quotTable." set is_deleted=1 where quot_id=".$quot_id;
+					$this->executeGenericDMLQuery($sql);
+					$this->sendResponse(200,'success','Quotation deleted successfully');
+				}
+				else{
+					$this->sendResponse(201,'failure','Quotation not found');
+				}	
+			}
+			else{
+				$this->sendResponse(404,'failure','Unauthorized User');
+			}
+		}
+		public function getQuotHistoryDetails(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$id = $this->_request['id'];
+				$sql = "select * from ".self::quotHisTable." where quot_his_id=".$id;
+				$rows = $this->executeGenericDQLQuery($sql);
+				$data = array();
+				$data['quot_id'] = $rows[0]['quot_id'];
+				$data['quot_date'] = $rows[0]['quot_date'];
+				$data['quot_his_id'] = $rows[0]['quot_his_id'];
+
+				 $query = "select a.quot_det_his_id, a.history_id,a.quot_id, a.item_id, a.price, a.discount, a.total_price, a.description, a.valid_upto, b.item_name, b.quantity,b.uom from quotation_details_history_table a INNER JOIN  enquiry_item_table b ON a.item_id = b.item_id where a.history_id=".$id;
+				$rows = $this->executeGenericDQLQuery($query);
+				if(sizeof($rows)){
+					$total_amount = 0;
+					$item = array();
+					for($i = 0; $i < sizeof($rows); $i++){
+						$item[$i]['quot_det_his_id'] = $rows[$i]['quot_det_his_id'];
+						$item[$i]['history_id'] = $rows[$i]['history_id'];
+						$item[$i]['item_id'] = $rows[$i]['item_id'];
+						$item[$i]['price'] = $rows[$i]['price'];
+						$item[$i]['discount'] = $rows[$i]['discount'];
+						$item[$i]['tot_price'] = $rows[$i]['total_price'];
+						$item[$i]['description'] = $rows[$i]['description'];
+						$item[$i]['valid_upto'] = $rows[$i]['valid_upto'];
+						$item[$i]['item_name'] = $rows[$i]['item_name'];
+						$item[$i]['quantity'] = $rows[$i]['quantity'];
+						$item[$i]['uom'] = $rows[$i]['uom'];
+						$total_amount = $total_amount + ((float)$rows[$i]['total_price']);
+						$item[$i]['total_amount'] = $total_amount;
+					}
+					$data['total_amount'] =  $total_amount;
+					$data['itemList'] =  $item;
+					$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
+				}
+
+			}
+		}
+		public function clientDetails(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$client_id = $this->_request['id'];
+				$query = "select a.client_id, a.org_name, a.mobile, a.phone, a.email, a.contact_person, a.GSTN_No from client_table a where a.is_deleted =0 AND a.client_id=".$client_id;
+				$rows = $this->executeGenericDQLQuery($query);
+				$data = array();
+				if($rows){
+					$data['client_id'] = $rows[0]['client_id'];
+					$data['org_name'] = $rows[0]['org_name'];
+					$data['mobile'] = $rows[0]['mobile'];
+					$data['phone'] = $rows[0]['phone'];
+					$data['email'] = $rows[0]['email'];
+					$data['contact_person'] = $rows[0]['contact_person'];
+					$data['GSTN_No'] = $rows[0]['GSTN_No'];
+				}
+				$enq = array();
+				$query = "select * from ".self::enqTable." where is_deleted=0 AND client_id=".$client_id;
+				$enq_result = $this->executeGenericDQLQuery($query);
+				if($enq_result){
+					for($i = 0; $i < sizeof($enq_result); $i++){
+						$enq[$i]['enq_id'] = $enq_result[$i]['enq_id'];
+						$enq[$i]['enq_date'] = $enq_result[$i]['enq_date'];
+						$enq[$i]['due_date'] = $enq_result[$i]['due_date'];
+						$enq[$i]['ref_no'] = $enq_result[$i]['ref_no'];
+						$enq[$i]['status'] = $enq_result[$i]['status'];
+						$enq[$i]['remarks'] = $enq_result[$i]['remarks'];
+						$enq_id = $enq_result[$i]['enq_id'];
+						$item_list = "select * from ".self::enqItemTable." where enq_id=".$enq_id;
+						$item_result = $this->executeGenericDQLQuery($item_list);
+						if($item_result){
+							$item = array();
+							for($j = 0; $j < sizeof($item_result); $j++){
+								$item[$i]['item_id'] = $item_result[$i]['item_id'];
+								$item[$i]['enq_id'] = $item_result[$i]['enq_id'];
+								$item[$i]['item_name'] = $item_result[$i]['item_name'];
+								$item[$i]['description'] = $item_result[$i]['description'];
+								$item[$i]['quantity'] = $item_result[$i]['quantity'];
+								$item[$i]['uom'] = $item_result[$i]['uom'];
+							}
+							$enq[$i]['itemList'] = $item;
+						}
+					}
+					$data['enquiry'] = $enq;
+				}
+				$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
 			}
 		}
 	}

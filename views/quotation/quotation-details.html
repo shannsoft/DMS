@@ -29,7 +29,7 @@
         <tr ng-repeat="row in $data">
           <td data-title="'Sl No'" >{{ $index + 1}}</td>
           <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
-          <td data-title="'Description'" sortable="'description'">{{row.description}}</td>
+          <td style="width:30%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
           <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
           <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
           <td data-title="'Price'" sortable="'price'">{{row.price}}</td>
@@ -56,7 +56,7 @@
             <div class="icon">
               <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="#" class="small-box-footer">
+            <a href="" ui-sref="history-details({historyId:his.quot_his_id})" class="small-box-footer">
               More info <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>

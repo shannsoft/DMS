@@ -6,16 +6,13 @@ app.controller("Main_Controller",function($scope,$rootScope,$state,$localStorage
   $scope.getUseDetails = function(){
     if(localStorage.getItem('accessToken')){
       $scope.is_loggedin = true;
-      // $rootScope.user_type = localStorage.getItem('userType');
-      // userService.getUserDetails(localStorage.getItem('accessToken')).then(function(pRes) {
-      //     if(pRes.status == 200){
-      //       $scope.profile = pRes.data.data;
-      //       $scope.profile.name = $scope.profile.first_name+' '+$scope.profile.last_name;
-      //       console.log($scope.profile);
-      //     }
-      //   },function(err) {
-      //   console.log(">>>>>>>>>>>>>   ",err);
-      // })
+      userService.getUserDetails(localStorage.getItem('accessToken')).then(function(pRes) {
+          if(pRes.status == 200){
+            $rootScope.profile = pRes.data.data;
+          }
+        },function(err) {
+        console.log(">>>>>>>>>>>>>   ",err);
+      })
     }
     else{
       $scope.is_loggedin = false;

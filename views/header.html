@@ -11,14 +11,14 @@
       <ul class="nav navbar-nav">
         <li class="dropdown user user-menu">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
-            <span class="profile-pic-name">SM</span>
-            <span class="hidden-xs">Santosh Majhi</span>
+            <span class="profile-pic-name">{{profile.first_name+" "+profile.last_name | getShortName}}</span>
+            <span class="hidden-xs">{{profile.first_name+' '+profile.last_name}}</span>
           </a>
           <ul class="dropdown-menu">
             <li class="user-header">
               <img src="dist/img/tekno-sm-logo.png" class="" alt="User Image">
               <p>
-                Santosh Majhi - <span>Admin</span>
+                {{profile.first_name+' '+profile.last_name}} - <span>Admin</span>
               </p>
             </li>
             <li class="user-footer">

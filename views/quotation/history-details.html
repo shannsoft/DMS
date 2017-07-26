@@ -1,0 +1,37 @@
+<section class="content-header m-b-40">
+  <h1>
+    History Details
+    <small>Preview</small>
+  </h1>
+</section>
+<section class="content invoice" ng-init="loadQuotHistoryDetails()">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2 class="page-header">
+        <i class="fa fa-globe"></i> Quotation History.
+        <small class="pull-right">Date: {{quotaionHistory.quot_date | dateformat}}</small>
+      </h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 table-responsive">
+    <table ng-table="historyQuot" class="table table-bordered table-hover">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Sl No'" >{{ $index + 1}}</td>
+          <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
+          <td style="width:30%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
+          <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
+          <td data-title="'Price'" sortable="'price'">{{row.price}}</td>
+          <td data-title="'Discount'" sortable="'discount'">{{row.discount}}%</td>
+          <td data-title="'Net Ammount'" sortable="'tot_price'">{{row.tot_price}}</td>
+        </tr>
+        <tr>
+          <td class="bold text-right" colspan="7">Total Quot Price</td>
+          <td class="bold">{{quotaionHistory.total_amount.toFixed(2)}} /-</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="clearfix"></div>
