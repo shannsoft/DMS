@@ -84,6 +84,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
       loggedout: checkLoggedout
     }
   })
+  .state('quotation-details', {
+    templateUrl: 'views/quotation/quotation-details.html',
+    url: '/quotation-details/:quotId',
+    controller:'QuotController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
+  .state('quotation-update', {
+    templateUrl: 'views/quotation/quotation-update.html',
+    url: '/quotation-update/:quotId',
+    controller:'QuotController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
   .state('purchase-order', {
     templateUrl: 'views/purchaseOrder/new-po.html',
     url: '/purchase-order/:quotId',

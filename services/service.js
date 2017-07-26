@@ -150,6 +150,19 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    updateQuotation: function (data) {
+      var _serializedData = $.param({"reqmethod": 'updateQuotation', "quot_data":data});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accesstoken':localStorage.getItem('accessToken')
+          }
+      });
+      return response;
+    },
     quotationList: function(){
       var response = $http({
         method: 'GET',

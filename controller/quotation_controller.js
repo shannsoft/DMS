@@ -15,16 +15,37 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
   		})
   	}
   	/*******************************************************/
+    /******THIS FUNCTION IS USED TO ADD QUOTATION DET*******/
+    /*******************************************************/
+    $scope.addQuation = function(){
+      console.log($scope.enquiryDetails);
+      $rootScope.showPreloader = true;
+      $scope.enquiryDetails.quot_date = moment($scope.enquiryDetails.date).format('YYYY-MM-DD');
+      angular.forEach($scope.enquiryDetails.itemList,function(item){
+        item.exp_date = moment(item.date).format('YYYY-MM-DD');
+      })
+      userService.addQuotation($scope.enquiryDetails).then(function(response) {
+        $rootScope.showPreloader = false;
+        if(response.data.statusCode == 200){
+          Util.alertMessage('success',response.data.message);
+        }
+        else{
+          Util.alertMessage('danger',response.data.message);
+        }
+      },function(error){
+        $rootScope.showPreloader = false;
+      })
+    }
+    /*******************************************************/
   	/******THIS FUNCTION IS USED TO ADD QUOTATION DET*******/
   	/*******************************************************/
-  	$scope.addQuation = function(){
-  		console.log($scope.enquiryDetails);
+  	$scope.updateQuation = function(){
       $rootScope.showPreloader = true;
-  		$scope.enquiryDetails.quot_date = moment($scope.enquiryDetails.date).format('YYYY-MM-DD');
-  		angular.forEach($scope.enquiryDetails.itemList,function(item){
-  			item.exp_date = moment(item.date).format('YYYY-MM-DD');
+  		$scope.quotaionDetails.quot_date = moment($scope.quotaionDetails.date).format('YYYY-MM-DD');
+  		angular.forEach($scope.quotaionDetails.itemList,function(item){
+  			item.valid_upto = moment(item.date).format('YYYY-MM-DD');
   		})
-  		userService.addQuotation($scope.enquiryDetails).then(function(response) {
+  		userService.updateQuotation($scope.quotaionDetails).then(function(response) {
         $rootScope.showPreloader = false;
   			if(response.data.statusCode == 200){
   				Util.alertMessage('success',response.data.message);
@@ -65,7 +86,10 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
         $rootScope.showPreloader = false;
         if(response.data.statusCode == 200){
           $scope.quotaionDetails = response.data.data;  
-          console.log($scope.quotaionDetails);
+          $scope.tableQuot = new NgTableParams();
+          $scope.tableQuot.settings({
+              dataset: $scope.quotaionDetails.itemList
+          })
         }
       },function(error){
         $rootScope.showPreloader = false;
@@ -81,6 +105,17 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
           item.tot_price = 0.00;
         }
       },200)
+    }
+    $scope.calculateQuotPrice = function(item){
+      if(item.price){
+        item.tot_price = item.quantity*item.price;
+        if(item.discount){
+          item.tot_price = item.tot_price - (item.tot_price * (item.discount / 100));
+        }
+      }
+      else {
+        item.tot_price = 0;
+      }
     }
     $scope.addPurchaseOrder = function(){
       $scope.quotaionDetails.po_date = moment($scope.quotaionDetails.date).format('YYYY-MM-DD');

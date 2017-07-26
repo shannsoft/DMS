@@ -1,0 +1,68 @@
+<section class="content-header m-b-40">
+  <h1>
+    Quotation Details
+    <small>Preview</small>
+  </h1>
+</section>
+<section class="content invoice" ng-init="loadQuotDetails()">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2 class="page-header">
+        <i class="fa fa-globe"></i> Latest Quotation.
+        <small class="pull-right">Date: {{quotaionDetails.quot_date | dateformat}}</small>
+      </h2>
+    </div>
+  </div>
+  <div class="row invoice-info">
+    <div class="col-sm-4 invoice-col">
+      <address>
+        <strong>{{quotaionDetails.org_name}}</strong><br>
+        Enquiry Date : {{quotaionDetails.enq_date | dateformat}}<br>
+        Enquiry Ref : {{quotaionDetails.enq_ref}}<br>
+        Quotation Ref : {{quotaionDetails.quot_ref}}<br>
+      </address>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 table-responsive">
+    <table ng-table="tableQuot" class="table table-bordered table-hover">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Sl No'" >{{ $index + 1}}</td>
+          <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
+          <td data-title="'Description'" sortable="'description'">{{row.description}}</td>
+          <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
+          <td data-title="'Price'" sortable="'price'">{{row.price}}</td>
+          <td data-title="'Discount'" sortable="'discount'">{{row.discount}}%</td>
+          <td data-title="'Net Ammount'" sortable="'tot_price'">{{row.tot_price}}</td>
+        </tr>
+        <tr>
+          <td class="bold text-right" colspan="7">Total Quot Price</td>
+          <td class="bold">{{quotaionDetails.total_amount.toFixed(2)}} /-</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <p class="lead"><strong>Quotation History:</strong></p>
+      <div class="row">
+        <div class="col-md-3" ng-repeat="his in quotaionDetails.history">
+          <div class="small-box bg-green">
+            <div class="inner">
+              <h4 class="inline">Rev {{$index+1}}</h4>
+              <p class="right inline">{{his.quot_date | dateformat}}</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-stats-bars"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+              More info <i class="fa fa-arrow-circle-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="clearfix"></div>

@@ -54,9 +54,9 @@
                             <td>{{item.item_name}}</td> 
                             <td>{{item.quantity}}</td> 
                             <td>{{item.uom}}</td> 
-                            <td><input type="number" class="form-control" placeholder="Price" ng-model="item.price" required></td> 
-                            <td><input type="number" class="form-control" placeholder="Discount" ng-model="item.discount" required></td> 
-                            <td><input type="number" class="form-control" placeholder="Total" ng-model="item.total" required></td> 
+                            <td><input type="number" class="form-control" placeholder="Price" ng-model="item.price" required ng-change="calculateQuotPrice(item)"></td> 
+                            <td><input type="number" class="form-control" placeholder="Discount" ng-model="item.discount" required ng-change="calculateQuotPrice(item)"></td> 
+                            <td><input readonly type="number" class="form-control" placeholder="Total" ng-model="item.tot_price" required></td> 
                             <td><input type="date" class="form-control" placeholder="Exp Date" ng-model="item.date" required></td> 
                             <td width="15%"><textarea class="form-control" placeholder="Desc.." ng-model="item.description"></textarea></td> 
                           </tr> 
@@ -64,7 +64,6 @@
                       </table>
                   </div>
                 </div>
-
               </div>
               <div class="box-footer">
                 <button type="submit" class="btn btn-default" ui-sref="enquiry">Cancel</button>
@@ -72,7 +71,6 @@
               </div>
             </form>
           </div>
-         
         </div>
   </div>
  </section>

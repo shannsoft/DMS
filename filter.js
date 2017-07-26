@@ -4,4 +4,4 @@ app.filter('dateformat', function(){
       return moment(date).format("DD MMM, YYYY");
     }
   }
-})
+});
