@@ -1,4 +1,4 @@
-<section class="content-header">
+<section class="content-header m-b-40">
   <h1 class="pull-left">
     Enquiry List
     <small>advanced tables</small>
@@ -24,13 +24,13 @@
               <td data-title="'Remarks'" sortable="'remarks'">{{row.remarks}}</td>
               <td data-title="'Action'" >
               	<div class="btn-group">
-                  <button type="button" class="btn btn-success"><i class="fa fa-eye"></i></button>
+                  <button type="button" class="btn btn-success" ui-sref="enquiry-details({enqId:row.enq_id})"><i class="fa fa-eye"></i></button>
                 </div>
+                <!-- <div class="btn-group">
+                  <button type="button" ng-disabled="row.status=='Purchase order added'" ui-sref="enquiry-update({enqId:row.enq_id})" class="btn btn-warning"><i class="fa fa-edit"></i></button>
+                </div> -->
                 <div class="btn-group">
-                  <button type="button" class="btn btn-warning"><i class="fa fa-edit"></i></button>
-                </div>
-                <div class="btn-group">
-                  <button type="button" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                  <button type="button" ng-disabled="row.status=='Purchase order added'" class="btn btn-danger"><i class="fa fa-trash"></i></button>
                 </div>
                 <div class="btn-group">
                   <button type="button" class="btn btn-info"><i class="fa fa-align-left"></i></button>
@@ -39,8 +39,8 @@
                     <span class="sr-only">Toggle Dropdown</span>
                   </button>
                   <ul class="dropdown-menu" role="menu">
-                    <li><a href="" ui-sref="new-quotation({enqId:row.enq_id})">New Quatation</a></li>
-                    <!-- <li><a href="" >Purchase order</a></li> -->
+                    <li><a  href="" ng-class="{'disable-link':row.status != 'No Quotation'}" ui-sref="new-quotation({enqId:row.enq_id})">New Quatation</a></li>
+                    <!-- <li><a ng-class="{'disable-link':row.status != 'No Quotation'}" href="" >Purchase order</a></li> -->
                   </ul>
                 </div>
               </td>

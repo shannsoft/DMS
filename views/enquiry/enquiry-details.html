@@ -1,0 +1,38 @@
+<section class="content-header m-b-40">
+  <h1>
+    Enquiry Details
+    <small>Preview</small>
+  </h1>
+</section>
+<section class="content invoice" ng-init="loadEnqDetails()">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2 class="page-header">
+        <i class="fa fa-globe"></i> Enquiry Details.
+        <small class="pull-right">Date: {{enquiryDetails.enq_date | dateformat}}</small>
+      </h2>
+    </div>
+  </div>
+  <div class="row invoice-info">
+    <div class="col-sm-4 invoice-col">
+      <address>
+        <strong>{{enquiryDetails.org_name}}</strong><br>
+        Enquiry Ref : {{enquiryDetails.ref_no}}<br>
+        Due Date : {{enquiryDetails.due_date | dateformat}}
+      </address>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 table-responsive">
+    <table ng-table="tableParams" class="table table-bordered table-hover">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Sl No'" >{{ $index + 1}}</td>
+          <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
+          <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="clearfix"></div>

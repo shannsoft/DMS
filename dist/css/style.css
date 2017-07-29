@@ -5134,3 +5134,10 @@ table.text-center th {
 .bg-lightgray{
     background: #f4f4f5;
 }
+.disable-link{
+  pointer-events: none;
+  cursor: no-drop;
+  color: #a7abb1 !important;
+}
+.border-none{border:none !important;}
+.ng-table-pager{margin-top:10px;}

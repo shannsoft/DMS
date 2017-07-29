@@ -50,6 +50,12 @@
 			                <span ng-if="client_form.phone.$touched && client_form.phone.$error.pattern" class="help-block">This is not a valid number</span>
 			              </div>
 			            </div>
+			            <div class="form-group" ng-class="{'has-error': client_form.phone.$touched && client_form.phone.$invalid}">
+			              <label for="text" class="col-sm-3 control-label">Address</label>
+			              <div class="col-sm-9">
+			                <textarea class="form-control" name="address" placeholder="Address" ng-model="client.address" required></textarea>
+			              </div>
+			            </div>
 			            <div class="form-group">
 			              <label for="text" class="col-sm-3 control-label">Web Site</label>
 			              <div class="col-sm-9">

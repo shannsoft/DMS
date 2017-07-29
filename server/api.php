@@ -359,8 +359,9 @@ header('Access-Control-Allow-Origin: *');
 						$email = $client_data['email'];
 						$contact_person = $client_data['contact_person'];
 						$gstn_no = $client_data['gstn_no'];
-						$sql = "INSERT INTO ".self::clientTable."(org_name, mobile, email, contact_person, GSTN_No) 
-							VALUES ('$org_name','$mobile','$email','$contact_person','$gstn_no')";
+						$address = $client_data['address'];
+						$sql = "INSERT INTO ".self::clientTable."(org_name, mobile, email, contact_person, GSTN_No,address) 
+							VALUES ('$org_name','$mobile','$email','$contact_person','$gstn_no','$address')";
 						$result = $this->executeGenericDMLQuery($sql);
 						if($result && (isset($client_data['phone']) || isset($client_data['web']) )){
 							$client_id = mysql_insert_id();
@@ -378,7 +379,7 @@ header('Access-Control-Allow-Origin: *');
 							$sql .=" where client_id=".$client_id;
 							$result1 = $this->executeGenericDMLQuery($sql);
 						}
-						$this->sendResponse(200,'Client added successfully');
+						$this->sendResponse(200,'Ok','Client added successfully');
 						break;
 					case 'get' :
 						$sql = "SELECT * FROM ".self::clientTable.' where is_deleted=0';
@@ -389,7 +390,7 @@ header('Access-Control-Allow-Origin: *');
 						$rows = $this->executeGenericDQLQuery($sql);
 						$data = array();
 						for($i=0;$i<sizeof($rows);$i++){
-							$data[$i]['client_id'] = $rows[$i]['client_id'];
+							$data[$i]['client_id'] = (int)$rows[$i]['client_id'];
 							$data[$i]['org_name'] = $rows[$i]['org_name'];
 							$data[$i]['mobile'] = $rows[$i]['mobile'];
 							$data[$i]['phone'] = $rows[$i]['phone'];
@@ -397,8 +398,9 @@ header('Access-Control-Allow-Origin: *');
 							$data[$i]['contact_person'] = $rows[$i]['contact_person'];
 							$data[$i]['gstn_no'] = $rows[$i]['GSTN_No'];
 							$data[$i]['web'] = $rows[$i]['web'];
+							$data[$i]['address'] = $rows[$i]['address'];
 						}
-						$this->sendResponse(200,$this->messages['dataFetched'],'',$data);
+						$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
 						break;
 					case 'delete' :
 						if(isset($this->_request['id'])){
@@ -446,6 +448,10 @@ header('Access-Control-Allow-Origin: *');
 						if(isset($client_data['web'])){
 							$web = $client_data['web'];
 							$sql .= $comma."web='$web'";	
+						}
+						if(isset($client_data['address'])){
+							$address = $client_data['address'];
+							$sql .= $comma."address='$address'";	
 						}
 						$sql .= ' where client_id='.$client_id;
 						$this->executeGenericDMLQuery($sql);
@@ -495,15 +501,11 @@ header('Access-Control-Allow-Origin: *');
 						break;
 					case 'get' :
 						$sql = "select a.enq_id,a.client_id,a.enq_date,a.due_date,a.ref_no,a.status,a.remarks,b.org_name,(select count(*) from quotaion_table where enq_id = a.enq_id) as quot_count from enquiry_table a INNER JOIN client_table b ON a.client_id = b.client_id where a.is_deleted=0";
-						if(isset($this->_request['id'])){
-							$id = $this->_request['id'];
-							$sql .= ' enq_id='.$id;
-						}
 						$rows = $this->executeGenericDQLQuery($sql);
 						$data = array();
 						for($i=0;$i<sizeof($rows);$i++){
-							$data[$i]['enq_id'] = $rows[$i]['enq_id'];
-							$data[$i]['client_id'] = $rows[$i]['client_id'];
+							$data[$i]['enq_id'] = (int)$rows[$i]['enq_id'];
+							$data[$i]['client_id'] = (int)$rows[$i]['client_id'];
 							$data[$i]['org_name'] = $rows[$i]['org_name'];
 							$data[$i]['enq_date'] = $rows[$i]['enq_date'];
 							$data[$i]['due_date'] = $rows[$i]['due_date'];
@@ -528,7 +530,7 @@ header('Access-Control-Allow-Origin: *');
 				$rows = $this->executeGenericDQLQuery($sql);
 				$data = array();
 				$data['enq_id'] = $rows[0]['enq_id'];
-				$data['client_id'] = $rows[0]['client_id'];
+				$data['client_id'] = (int)$rows[0]['client_id'];
 				$data['org_name'] = $rows[0]['org_name'];
 				$data['enq_date'] = $rows[0]['enq_date'];
 				$data['due_date'] = $rows[0]['due_date'];
@@ -543,7 +545,7 @@ header('Access-Control-Allow-Origin: *');
 						$item[$i]['item_id'] = $result[$i]['item_id'];
 						$item[$i]['item_name'] = $result[$i]['item_name'];
 						$item[$i]['description'] = $result[$i]['description'];
-						$item[$i]['quantity'] = $result[$i]['quantity'];
+						$item[$i]['quantity'] = (int)$result[$i]['quantity'];
 						$item[$i]['uom'] = $result[$i]['uom'];
 					}
 				}
@@ -566,14 +568,17 @@ header('Access-Control-Allow-Origin: *');
 					$this->executeGenericDMLQuery($sql);
 					$count = sizeof($quot_data['itemList']);
 					$item_list = $quot_data['itemList'];
-					$query = "INSERT INTO ".self::quotDetTable."(quot_id, item_id, price, discount, tot_price, valid_upto, description) VALUES ";
+					$query = "INSERT INTO ".self::quotDetTable."(quot_id, item_id, price, discount, tot_price, hsn_no, tax, tax_price, valid_upto, description) VALUES ";
 					$comma = ', ';
 					for ($i = 0; $i < $count; $i++) {
 						if($i == $count-1)
 							$comma = '';
 						$description  = (isset($item_list[$i]["description"])) ? $item_list[$i]["description"] : '';
+						$tax  = (isset($item_list[$i]["tax"])) ? $item_list[$i]["tax"] : 0;
+						$tax_price  = (isset($item_list[$i]["tax_price"])) ? $item_list[$i]["tax_price"] : 0;
+						$hsn_no  = (isset($item_list[$i]["hsn_no"])) ? $item_list[$i]["hsn_no"] : null;
 
-						$query.="('$quot_id','".$item_list[$i]["item_id"]."','".$item_list[$i]["price"]."','".$item_list[$i]["discount"]."','".$item_list[$i]["tot_price"]."','".$item_list[$i]["exp_date"]."','".$description."')".$comma;
+						$query.="('$quot_id','".$item_list[$i]["item_id"]."','".$item_list[$i]["price"]."','".$item_list[$i]["discount"]."','".$item_list[$i]["tot_price"]."','".$hsn_no."','".$tax."','".$tax_price."','".$item_list[$i]["exp_date"]."','".$description."')".$comma;
 					}
 					$this->executeGenericDMLQuery($query);
 					$sql_query = "UPDATE ".self::enqTable." set status='Quotation added' where enq_id=".$enq_id;
@@ -602,7 +607,7 @@ header('Access-Control-Allow-Origin: *');
 					$query = "SELECT * FROM ".self::quotDetTable." WHERE quot_id=".$quot_id;
 					$result = $this->executeGenericDQLQuery($query);
 					if(sizeof($result)){
-						$query = "INSERT INTO ".self::quotDetHisTable."(history_id,quot_id, item_id, price, discount, total_price, valid_upto,description) VALUES ";
+						$query = "INSERT INTO ".self::quotDetHisTable."(history_id,quot_id, item_id, price, discount, total_price, hsn_no, tax, tax_price, valid_upto, description) VALUES ";
 						$comma = ', ';
 						for($i = 0; $i < sizeof($result); $i++){
 							if($i == sizeof($result)-1){
@@ -610,8 +615,11 @@ header('Access-Control-Allow-Origin: *');
 							}
 							$valid_upto_date = $item_list[$i]['valid_upto'];
 							$description = $item_list[$i]['description'];
+							$tax  = (isset($item_list[$i]["tax"])) ? $item_list[$i]["tax"] : 0;
+							$tax_price  = (isset($item_list[$i]["tax_price"])) ? $item_list[$i]["tax_price"] : 0;
+							$hsn_no  = (isset($item_list[$i]["hsn_no"])) ? $item_list[$i]["hsn_no"] : null;
 
-							$query.="('$his_id','$quot_id','".$result[$i]["item_id"]."','".$result[$i]["price"]."','".$result[$i]["discount"]."','".$result[$i]["tot_price"]."','".$result[$i]["valid_upto"]."','".$result[$i]["description"]."')".$comma;
+							$query.="('$his_id','$quot_id','".$result[$i]["item_id"]."','".$result[$i]["price"]."','".$result[$i]["discount"]."','".$result[$i]["tot_price"]."','".$hsn_no."','".$tax."','".$tax_price."','".$result[$i]["valid_upto"]."','".$result[$i]["description"]."')".$comma;
 
 							$update = "UPDATE ".self::quotDetTable." set price=".$item_list[$i]['price'].", discount=".$item_list[$i]['discount'].", tot_price=".$item_list[$i]['tot_price'].", valid_upto='$valid_upto_date',description='$description' where quot_det_id=".$item_list[$i]['quot_det_id'];
 							$this->executeGenericDMLQuery($update);
@@ -625,7 +633,7 @@ header('Access-Control-Allow-Origin: *');
 		public function quotationList() {
 			$headers = apache_request_headers();
 			if($headers['Accesstoken']){
-				$sql = "select a.quot_id, a.enq_id, a.quot_date, a.ref_no, b.client_id,b.ref_no as enq_ref,b.enq_date,c.org_name from quotaion_table a INNER JOIN enquiry_table b ON  a.enq_id = b.enq_id INNER JOIN client_table c ON b.client_id = c.client_id where a.is_deleted=0";
+				$sql = "select a.quot_id, a.enq_id, a.quot_date, a.ref_no, b.client_id,b.ref_no as enq_ref,b.enq_date,b.status,c.org_name from quotaion_table a INNER JOIN enquiry_table b ON  a.enq_id = b.enq_id INNER JOIN client_table c ON b.client_id = c.client_id where a.is_deleted=0";
 				$rows = $this->executeGenericDQLQuery($sql);
 				$data = array();
 				for($i = 0; $i < sizeof($rows); $i++){
@@ -637,6 +645,7 @@ header('Access-Control-Allow-Origin: *');
 					$data[$i]['enq_ref'] = $rows[$i]['enq_ref'];
 					$data[$i]['org_name'] = $rows[$i]['org_name'];
 					$data[$i]['enq_date'] = $rows[$i]['enq_date'];
+					$data[$i]['status'] = $rows[$i]['status'];
 				}
 				$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
 			}
@@ -659,10 +668,11 @@ header('Access-Control-Allow-Origin: *');
 				$data['status'] = $rows[0]['status'];
 				$data['remarks'] = $rows[0]['remarks'];
 				if(sizeof($rows)){
-					$query = "select a.quot_det_id, a.quot_id, a.item_id,a.price,a.discount,a.tot_price,a.description,a.valid_upto,b.item_name,b.quantity,b.uom from quotaion_details_table a INNER JOIN  enquiry_item_table b ON a.item_id=b.item_id where a.is_deleted=0 AND a.quot_id=".$id;
+					$query = "select a.quot_det_id, a.quot_id, a.item_id,a.price,a.discount,a.tot_price,a.description,a.hsn_no,a.tax,a.tax_price,a.valid_upto,b.item_name,b.quantity,b.uom from quotaion_details_table a INNER JOIN  enquiry_item_table b ON a.item_id=b.item_id where a.is_deleted=0 AND a.quot_id=".$id;
 					$result = $this->executeGenericDQLQuery($query);
 					$item = array();
 					$total_amount = 0;
+					$tax_amount = 0;
 					for($i = 0; $i < sizeof($result); $i++){
 						$item[$i]['quot_det_id'] = $result[$i]['quot_det_id'];
 						$item[$i]['quot_id'] = $result[$i]['quot_id'];
@@ -674,8 +684,12 @@ header('Access-Control-Allow-Origin: *');
 						$item[$i]['item_name'] = $result[$i]['item_name'];
 						$item[$i]['quantity'] = (float)$result[$i]['quantity'];
 						$item[$i]['uom'] = $result[$i]['uom'];
+						$item[$i]['hsn_no'] = $result[$i]['hsn_no'];
+						$item[$i]['tax_price'] = (float)$result[$i]['tax_price'];
+						$item[$i]['tax'] = (float)$result[$i]['tax'];
 						$item[$i]['valid_upto'] = $result[$i]['valid_upto'];
 						$total_amount = $total_amount + ((float)$result[$i]['tot_price']);
+						$tax_amount = $tax_amount + ((float)$result[$i]['tax_price']);
 					}
 					$history  = "SELECT * FROM ".self::quotHisTable." where quot_id=".$id;
 					$rows = $this->executeGenericDQLQuery($history);
@@ -690,6 +704,8 @@ header('Access-Control-Allow-Origin: *');
 				$data['itemList'] = $item;
 				$data['history'] = $his_data;
 				$data['total_amount'] = $total_amount;
+				$data['tax_amount'] = $tax_amount;
+				$data['grand_total'] = $tax_amount+$total_amount;
 				$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
 			}
 		}
@@ -708,15 +724,18 @@ header('Access-Control-Allow-Origin: *');
 					$count = sizeof($po_data['itemList']);
 					if($count > 0){
 						$item_list = $po_data['itemList'];
-						$query = "INSERT INTO ".self::poDetTable."(po_id, quot_det_id, delivery_date, description, quantity, price, net_amount,item_code) VALUES ";
+						$query = "INSERT INTO ".self::poDetTable."(po_id, quot_det_id, delivery_date, description, quantity, price, hsn_no, tax, tax_price, net_amount, item_code) VALUES ";
 						$comma = ', ';
 						for ($i = 0; $i < $count; $i++) {
 							if($i == $count-1)
 								$comma = '';
 							$description  = (isset($item_list[$i]["description"])) ? $item_list[$i]["description"] : '';
 							$item_code  = (isset($item_list[$i]["item_code"])) ? $item_list[$i]["item_code"] : '';
+							$hsn_no  = (isset($item_list[$i]["hsn_no"])) ? $item_list[$i]["hsn_no"] : null;
+							$tax  = (isset($item_list[$i]["tax"])) ? $item_list[$i]["tax"] : 0;
+							$tax_price  = (isset($item_list[$i]["tax_price"])) ? $item_list[$i]["tax_price"] : 0;
 
-							$query.="('$po_id','".$item_list[$i]["quot_id"]."','".$item_list[$i]["delivery_date"]."','".$description."','".$item_list[$i]["quantity"]."','".$item_list[$i]["price"]."','".$item_list[$i]["tot_price"]."','".$item_code."')".$comma;
+							$query.="('$po_id','".$item_list[$i]["quot_det_id"]."','".$item_list[$i]["delivery_date"]."','".$description."','".$item_list[$i]["quantity"]."','".$item_list[$i]["price"]."','".$hsn_no."','".$tax."','".$tax_price."','".$item_list[$i]["tot_price"]."','$item_code')".$comma;
 						}
 						$this->executeGenericDMLQuery($query);
 						$sql_query = "UPDATE ".self::enqTable." set status='Purchase order added' where enq_id=".$enq_id;
@@ -754,27 +773,33 @@ header('Access-Control-Allow-Origin: *');
 				$data['quot_date'] = $rows[0]['quot_date'];
 				$data['quot_his_id'] = $rows[0]['quot_his_id'];
 
-				 $query = "select a.quot_det_his_id, a.history_id,a.quot_id, a.item_id, a.price, a.discount, a.total_price, a.description, a.valid_upto, b.item_name, b.quantity,b.uom from quotation_details_history_table a INNER JOIN  enquiry_item_table b ON a.item_id = b.item_id where a.history_id=".$id;
+				 $query = "select a.quot_det_his_id, a.history_id,a.quot_id, a.item_id, a.price, a.discount, a.total_price, a.tax, a.tax_price,a.hsn_no, a.description, a.valid_upto, b.item_name, b.quantity,b.uom from quotation_details_history_table a INNER JOIN  enquiry_item_table b ON a.item_id = b.item_id where a.history_id=".$id;
 				$rows = $this->executeGenericDQLQuery($query);
 				if(sizeof($rows)){
 					$total_amount = 0;
+					$tax_amount = 0;
 					$item = array();
 					for($i = 0; $i < sizeof($rows); $i++){
 						$item[$i]['quot_det_his_id'] = $rows[$i]['quot_det_his_id'];
 						$item[$i]['history_id'] = $rows[$i]['history_id'];
 						$item[$i]['item_id'] = $rows[$i]['item_id'];
-						$item[$i]['price'] = $rows[$i]['price'];
-						$item[$i]['discount'] = $rows[$i]['discount'];
-						$item[$i]['tot_price'] = $rows[$i]['total_price'];
+						$item[$i]['price'] = (float)$rows[$i]['price'];
+						$item[$i]['discount'] = (float)$rows[$i]['discount'];
+						$item[$i]['tot_price'] = (float)$rows[$i]['total_price'];
 						$item[$i]['description'] = $rows[$i]['description'];
 						$item[$i]['valid_upto'] = $rows[$i]['valid_upto'];
 						$item[$i]['item_name'] = $rows[$i]['item_name'];
 						$item[$i]['quantity'] = $rows[$i]['quantity'];
 						$item[$i]['uom'] = $rows[$i]['uom'];
+						$item[$i]['tax'] = (float)$rows[$i]['tax'];
+						$item[$i]['tax_price'] = (float)$rows[$i]['tax_price'];
+						$item[$i]['hsn_no'] = $rows[$i]['hsn_no'];
 						$total_amount = $total_amount + ((float)$rows[$i]['total_price']);
-						$item[$i]['total_amount'] = $total_amount;
+						$tax_amount = $tax_amount + ((float)$rows[$i]['tax_price']);
 					}
 					$data['total_amount'] =  $total_amount;
+					$data['tax_amount'] = $tax_amount;
+					$data['grand_total'] = $tax_amount + $total_amount;
 					$data['itemList'] =  $item;
 					$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
 				}
@@ -785,7 +810,7 @@ header('Access-Control-Allow-Origin: *');
 			$headers = apache_request_headers();
 			if($headers['Accesstoken']){
 				$client_id = $this->_request['id'];
-				$query = "select a.client_id, a.org_name, a.mobile, a.phone, a.email, a.contact_person, a.GSTN_No from client_table a where a.is_deleted =0 AND a.client_id=".$client_id;
+				$query = "select a.client_id, a.org_name, a.mobile, a.phone, a.email, a.contact_person, a.GSTN_No,a.web,a.address from client_table a where a.is_deleted =0 AND a.client_id=".$client_id;
 				$rows = $this->executeGenericDQLQuery($query);
 				$data = array();
 				if($rows){
@@ -795,7 +820,9 @@ header('Access-Control-Allow-Origin: *');
 					$data['phone'] = $rows[0]['phone'];
 					$data['email'] = $rows[0]['email'];
 					$data['contact_person'] = $rows[0]['contact_person'];
-					$data['GSTN_No'] = $rows[0]['GSTN_No'];
+					$data['gstn_no'] = $rows[0]['GSTN_No'];
+					$data['web'] = $rows[0]['web'];
+					$data['address'] = $rows[0]['address'];
 				}
 				$enq = array();
 				$query = "select * from ".self::enqTable." where is_deleted=0 AND client_id=".$client_id;
@@ -823,10 +850,126 @@ header('Access-Control-Allow-Origin: *');
 							}
 							$enq[$i]['itemList'] = $item;
 						}
+						$quot = "select * from ".self::quotTable. " where is_deleted = 0 AND enq_id=".$enq_id;
+						$quot_result = $this->executeGenericDQLQuery($quot);
+
+						$quotation = array();
+						if($quot_result){
+							$quotation['quot_id'] = $quot_result[0]['quot_id'];
+							$quotation['enq_id'] = $quot_result[0]['enq_id'];
+							$quotation['quot_date'] = $quot_result[0]['quot_date'];
+							$quotation['ref_no'] = $quot_result[0]['ref_no'];
+							$quot_id = $quot_result[0]['quot_id'];
+							$po_query = "select * from ".self::poTable." where quot_id=".$quot_id;
+							$po_result = $this->executeGenericDQLQuery($po_query);
+
+							$po = array();
+							if($po_result){
+								$po['po_id'] = $po_result[0]['po_id'];
+								$po['quot_id'] = $po_result[0]['quot_id'];
+								$po['po_no'] = $po_result[0]['po_no'];
+								$po['po_date'] = $po_result[0]['po_date'];
+							}
+							$enq[$i]['po'] = $po;
+						}
+						$enq[$i]['quotation'] = $quotation;
 					}
 					$data['enquiry'] = $enq;
+					
 				}
 				$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
+			}
+		}
+		public function getPoDetails(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$po_id = $this->_request['id'];
+				$sql = "select a.po_id, a.quot_id, a.po_no, a.po_date, b.enq_id, b.quot_date, b.ref_no as quot_ref, c.client_id, c.enq_date, c.due_date, c.ref_no as enq_ref, c.status, c.remarks, d.org_name, d.mobile, d.phone, d.email, d.contact_person, d.GSTN_No, d.web from purchase_order_table a INNER JOIN quotaion_table b ON a.quot_id = b.quot_id INNER JOIN enquiry_table c ON b.enq_id = c.enq_id INNER JOIN client_table d ON c.client_id = d.client_id where a.po_id=".$po_id;
+				$rows = $this->executeGenericDQLQuery($sql);
+				$data = array();
+				if($rows){
+					$data['po_id'] = $rows[0]['po_id'];
+					$data['quot_id'] = $rows[0]['quot_id'];
+					$data['po_no'] = $rows[0]['po_no'];
+					$data['po_date'] = $rows[0]['po_date'];
+					$data['enq_id'] = $rows[0]['enq_id'];
+					$data['quot_date'] = $rows[0]['quot_date'];
+					$data['quot_ref'] = $rows[0]['quot_ref'];
+					$data['client_id'] = $rows[0]['client_id'];
+					$data['enq_date'] = $rows[0]['enq_date'];
+					$data['due_date'] = $rows[0]['due_date'];
+					$data['enq_ref'] = $rows[0]['enq_ref'];
+					$data['status'] = $rows[0]['status'];
+					$data['remarks'] = $rows[0]['remarks'];
+					$data['org_name'] = $rows[0]['org_name'];
+					$data['mobile'] = $rows[0]['mobile'];
+					$data['phone'] = $rows[0]['phone'];
+					$data['email'] = $rows[0]['email'];
+					$data['contact_person'] = $rows[0]['contact_person'];
+					$data['gstn_no'] = $rows[0]['GSTN_No'];
+					$data['web'] = $rows[0]['web'];
+					$query = "select a.po_details_id, a.po_id, a.quot_det_id, a.delivery_date, a.description, a.quantity, a.price, a.hsn_no, a.tax, a.tax_price, a.net_amount,a.item_code, b.item_id, b.discount, c.item_name,c.uom from purchase_order_details_table a INNER JOIN  quotaion_details_table b ON a.quot_det_id = b.quot_det_id INNER JOIN enquiry_item_table c ON b.item_id = c.item_id where a.po_id=".$po_id;
+					$result = $this->executeGenericDQLQuery($query);
+					if($result){
+						$po_item = array();
+						$total_amount = 0;
+						$tax_amount = 0;
+						for($i = 0; $i < sizeof($result); $i++){
+							$po_item[$i]['po_details_id'] = $result[$i]['po_details_id'];
+							$po_item[$i]['quot_det_id'] = $result[$i]['quot_det_id'];
+							$po_item[$i]['delivery_date'] = $result[$i]['delivery_date'];
+							$po_item[$i]['description'] = $result[$i]['description'];
+							$po_item[$i]['quantity'] = $result[$i]['quantity'];
+							$po_item[$i]['price'] = (float)$result[$i]['price'];
+							$po_item[$i]['hsn_no'] = $result[$i]['hsn_no'];
+							$po_item[$i]['tax'] = (float)$result[$i]['tax'];
+							$po_item[$i]['tax_price'] = (float)$result[$i]['tax_price'];
+							$po_item[$i]['net_amount'] = (float)$result[$i]['net_amount'];
+							$po_item[$i]['item_code'] = $result[$i]['item_code'];
+							$po_item[$i]['item_id'] = $result[$i]['item_id'];
+							$po_item[$i]['discount'] = (float)$result[$i]['discount'];
+							$po_item[$i]['item_name'] = $result[$i]['item_name'];
+							$po_item[$i]['uom'] = $result[$i]['uom'];
+							$total_amount = $total_amount + ((float)$result[$i]['net_amount']);
+							$tax_amount = $tax_amount + ((float)$result[$i]['tax_price']);
+						}
+						$data['itemList'] = $po_item;
+						$data['total_ammount'] = $total_amount;
+						$data['tax_ammount'] = $tax_amount;
+						$data['grand_total'] = $tax_amount + $total_amount;
+					}
+
+					$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
+				}
+			}
+		}
+		public function poList(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$query = "select a.po_id, a.quot_id, a.po_no, a.po_date, b.enq_id, b.quot_date, b.ref_no as quot_ref, c.client_id, c.enq_date, c.ref_no as enq_ref, c.status, c.remarks, d.org_name from purchase_order_table a INNER JOIN quotaion_table b ON a.quot_id = b.quot_id INNER JOIN enquiry_table c ON b.enq_id = c.enq_id INNER JOIN client_table d ON c.client_id = d.client_id";
+				$rows = $this->executeGenericDQLQuery($query);
+				$data = array();
+				if($rows){
+					for($i = 0; $i < sizeof($rows); $i++){
+						$data[$i]['po_id'] = $rows[$i]['po_id'];
+						$data[$i]['quot_id'] = $rows[$i]['quot_id'];
+						$data[$i]['po_no'] = $rows[$i]['po_no'];
+						$data[$i]['po_date'] = $rows[$i]['po_date'];
+						$data[$i]['enq_id'] = $rows[$i]['enq_id'];
+						$data[$i]['quot_date'] = $rows[$i]['quot_date'];
+						$data[$i]['quot_ref'] = $rows[$i]['quot_ref'];
+						$data[$i]['client_id'] = $rows[$i]['client_id'];
+						$data[$i]['enq_date'] = $rows[$i]['enq_date'];
+						$data[$i]['enq_ref'] = $rows[$i]['enq_ref'];
+						$data[$i]['status'] = $rows[$i]['status'];
+						$data[$i]['remarks'] = $rows[$i]['remarks'];
+						$data[$i]['org_name'] = $rows[$i]['org_name'];
+					}
+					$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
+				}
+			}
+			else{
+				$this->sendResponse(404,'faild','Unauthorized user');
 			}
 		}
 	}

@@ -68,6 +68,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
       loggedout: checkLoggedout
     }
   })
+  .state('enquiry-details', {
+    templateUrl: 'views/enquiry/enquiry-details.html',
+    url: '/enquiry-details/:enqId',
+    controller:'ClientController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
+  .state('enquiry-update', {
+    templateUrl: 'views/enquiry/update-enquiry.html',
+    url: '/enquiry-update/:enqId',
+    controller:'ClientController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
   .state('new-quotation', {
     templateUrl: 'views/quotation/new-quotation.html',
     url: '/new-quotation/:enqId',
@@ -108,9 +124,25 @@ app.config(function($stateProvider, $urlRouterProvider) {
       loggedout: checkLoggedout
     }
   })
+  .state('po-list', {
+    templateUrl: 'views/purchaseOrder/po-list.html',
+    url: '/po-list',
+    controller:'QuotController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
   .state('purchase-order', {
     templateUrl: 'views/purchaseOrder/new-po.html',
     url: '/purchase-order/:quotId',
+    controller:'QuotController',
+    resolve: {
+      loggedout: checkLoggedout
+    }
+  })
+  .state('po-details', {
+    templateUrl: 'views/purchaseOrder/po-details.html',
+    url: '/po-details/:poId',
     controller:'QuotController',
     resolve: {
       loggedout: checkLoggedout

@@ -1,4 +1,4 @@
-app.controller("QuotController", function($scope,$rootScope,userService,$stateParams,Util,NgTableParams,$timeout,$uibModal) {
+app.controller("QuotController", function($scope,$rootScope,userService,$stateParams,Util,NgTableParams,$timeout,$uibModal,$state) {
 	/*******************************************************/
   	/*******THIS FUNCTION IS USED TO LOAD ENQUIRY DET*******/
   	/*******************************************************/
@@ -18,7 +18,6 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
     /******THIS FUNCTION IS USED TO ADD QUOTATION DET*******/
     /*******************************************************/
     $scope.addQuation = function(){
-      console.log($scope.enquiryDetails);
       $rootScope.showPreloader = true;
       $scope.enquiryDetails.quot_date = moment($scope.enquiryDetails.date).format('YYYY-MM-DD');
       angular.forEach($scope.enquiryDetails.itemList,function(item){
@@ -27,6 +26,7 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
       userService.addQuotation($scope.enquiryDetails).then(function(response) {
         $rootScope.showPreloader = false;
         if(response.data.statusCode == 200){
+          $state.go('quotation-list');
           Util.alertMessage('success',response.data.message);
         }
         else{
@@ -48,6 +48,7 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
   		userService.updateQuotation($scope.quotaionDetails).then(function(response) {
         $rootScope.showPreloader = false;
   			if(response.data.statusCode == 200){
+          $state.go('quotation-list');
   				Util.alertMessage('success',response.data.message);
   			}
   			else{
@@ -100,6 +101,10 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
         if (item.quantity) {
           item.tot_price = item.quantity*item.price;
           item.tot_price = item.tot_price - (item.tot_price*(item.discount/100));
+          if(item.tax ){
+            item.tax_price = (item.tot_price * (item.tax / 100));
+            console.log(item.tax_price);
+          }
         }
         else{
           item.tot_price = 0.00;
@@ -111,6 +116,10 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
         item.tot_price = item.quantity*item.price;
         if(item.discount){
           item.tot_price = item.tot_price - (item.tot_price * (item.discount / 100));
+        }
+        if(item.tax){
+          item.tax_price = (item.tot_price * (item.tax / 100));
+          console.log(item.tax_price);
         }
       }
       else {
@@ -126,6 +135,7 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
       userService.addPurchaseOrder($scope.quotaionDetails).then(function(response){
         $rootScope.showPreloader = false;
         if(response.data.statusCode == 200){
+          $state.go('quotation-list');
           Util.alertMessage('success',response.data.message);
         }
         else{
@@ -182,6 +192,33 @@ app.controller("QuotController", function($scope,$rootScope,userService,$statePa
           })
         }
       })
+    }
+    $scope.loadPoList = function(){
+      $rootScope.showPreloader = true;
+      userService.getPoList().then(function(response){
+        $rootScope.showPreloader = false;
+        $scope.po_list = response.data.data;
+        $scope.tablePo = new NgTableParams();
+        $scope.tablePo.settings({
+            dataset: $scope.po_list
+        })
+      },function(error){
+        $rootScope.showPreloader = false;
+      });
+    }
+    $scope.loadPoDetails = function(){
+      $rootScope.showPreloader = true;
+      var po_id = $stateParams.poId;
+      userService.getPoDetails(po_id).then(function(response){
+        $rootScope.showPreloader = false;
+        $scope.poDetails = response.data.data;
+        $scope.tablePo = new NgTableParams();
+        $scope.tablePo.settings({
+            dataset: $scope.poDetails.itemList
+        })
+      },function(error){
+        $rootScope.showPreloader = false;
+      });
     }
 })
 app.controller('QuotModalCtrl', function ($scope, $uibModalInstance,deleteQuotation,quotID) {

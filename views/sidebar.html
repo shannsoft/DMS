@@ -27,7 +27,7 @@
           <i class="fa fa-th"></i> <span>User Management</span>
         </a>
       </li> -->
-      <li ng-class="{'active':stateName == 'enquiry' || stateName == 'new-enquiry'}">
+      <li ng-class="{'active':stateName == 'enquiry' || stateName == 'new-enquiry' || stateName == 'enquiry-details' || stateName == 'enquiry-update'}">
         <a href="" ui-sref="enquiry" >
           <i class="fa fa-files-o"></i> <span>Enquiry</span>
         </a>
@@ -37,7 +37,7 @@
           <i class="fa fa-building-o"></i><span>Quotations</span>
         </a>
       </li>
-      <li class="treeview" ng-class="{'active':stateName == 'purchase-order'}">
+      <li class="treeview" ng-class="{'active':stateName == 'purchase-order' || stateName == 'po-details'}">
         <a href="" ui-sref="buildingPlan">
           <i class="fa fa-building-o"></i><span>Purchase Order</span>
         </a>

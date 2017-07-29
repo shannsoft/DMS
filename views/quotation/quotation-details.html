@@ -29,16 +29,26 @@
         <tr ng-repeat="row in $data">
           <td data-title="'Sl No'" >{{ $index + 1}}</td>
           <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
-          <td style="width:30%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
+          <td data-title="'HSN Code'" sortable="'hsn_no'">{{row.hsn_no}}</td>
+          <td style="width:25%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
           <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
           <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
           <td data-title="'Price'" sortable="'price'">{{row.price}}</td>
-          <td data-title="'Discount'" sortable="'discount'">{{row.discount}}%</td>
+          <td data-title="'Discount'" sortable="'discount'">{{row.discount.toFixed(2)}}%</td>
+          <td data-title="'Tax Price'" sortable="'tax_price'">{{row.tax_price}} ({{row.tax.toFixed(2)}}%)</td>
           <td data-title="'Net Ammount'" sortable="'tot_price'">{{row.tot_price}}</td>
         </tr>
         <tr>
-          <td class="bold text-right" colspan="7">Total Quot Price</td>
-          <td class="bold">{{quotaionDetails.total_amount.toFixed(2)}} /-</td>
+          <td class="bold text-right border-none" colspan="9">Total Quot Price</td>
+          <td class="bold border-none">{{quotaionDetails.total_amount.toFixed(2)}} /-</td>
+        </tr>
+        <tr>
+          <td class="bold text-right border-none" colspan="9">Tax Price</td>
+          <td class="bold border-none">{{quotaionDetails.tax_amount.toFixed(2)}} /-</td>
+        </tr>
+        <tr>
+          <td class="bold text-right" colspan="9">Grand total</td>
+          <td class="bold">{{quotaionDetails.grand_total.toFixed(2)}} /-</td>
         </tr>
       </table>
     </div>

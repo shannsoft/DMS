@@ -1,4 +1,4 @@
-app.controller('ClientController',function($scope,$rootScope,userService,Util,NgTableParams,$uibModal,$stateParams){
+app.controller('ClientController',function($scope,$rootScope,userService,Util,NgTableParams,$uibModal,$stateParams,$state){
   $scope.client = {};
 	$scope.enq = {};
   $scope.enq.itemList = [
@@ -17,6 +17,7 @@ app.controller('ClientController',function($scope,$rootScope,userService,Util,Ng
   		userService.addClient($scope.client).then(function(response){
   			$rootScope.showPreloader = false;
   			if(response.data.statusCode == 200){
+          $state.go('client');
   				Util.alertMessage('success',response.data.message);
   			}
   			else{
@@ -44,9 +45,9 @@ app.controller('ClientController',function($scope,$rootScope,userService,Util,Ng
         $rootScope.showPreloader = false;
       })
     }
-    $scope.clientDetails = function(){
+    // $scope.clientDetails = function(){
 
-    }
+    // }
     $scope.addItem = function(){
       var obj = {name:'',qua:'',uom:''};
       $scope.enq.itemList.push(obj);
@@ -98,6 +99,7 @@ app.controller('ClientController',function($scope,$rootScope,userService,Util,Ng
         userService.addEnquiry($scope.enq).then(function(response){
           $rootScope.showPreloader = false;
           if(response.data.statusCode == 200){
+            $state.go('enquiry');
             Util.alertMessage('success',response.data.message);
           }
           else{
@@ -120,6 +122,21 @@ app.controller('ClientController',function($scope,$rootScope,userService,Util,Ng
           $scope.tableParams = new NgTableParams();
           $scope.tableParams.settings({
               dataset: $scope.enqList
+          })
+        }
+      },function(error){
+        $rootScope.showPreloader = false;
+      })
+    }
+    $scope.loadEnqDetails = function(){
+      $rootScope.showPreloader = true;
+      userService.enquiryDetails($stateParams.enqId).then(function(response) {
+        if(response.data.statusCode == 200){
+          $rootScope.showPreloader = false;
+          $scope.enquiryDetails = response.data.data;
+          $scope.tableParams = new NgTableParams();
+          $scope.tableParams.settings({
+              dataset: $scope.enquiryDetails.itemList
           })
         }
       },function(error){

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 26, 2017 at 04:11 PM
+-- Generation Time: Jul 29, 2017 at 07:16 AM
 -- Server version: 10.0.17-MariaDB
 -- PHP Version: 5.6.14
 
@@ -35,17 +35,26 @@ CREATE TABLE `client_table` (
   `contact_person` varchar(250) DEFAULT NULL,
   `GSTN_No` varchar(250) NOT NULL,
   `web` varchar(250) DEFAULT NULL,
-  `is_deleted` tinyint(4) NOT NULL DEFAULT '0'
+  `is_deleted` tinyint(4) NOT NULL DEFAULT '0',
+  `address` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `client_table`
 --
 
-INSERT INTO `client_table` (`client_id`, `org_name`, `mobile`, `phone`, `email`, `contact_person`, `GSTN_No`, `web`, `is_deleted`) VALUES
-(4, 'Canon', '9438753143', '9078640778', 'soumya@gmail.com', 'Soumya Mohanty', '546897321', 'teknobiz.in', 0),
-(5, 'JIndal', '9078640778', '9078640778', 'santoshmajhi99@gmail.com', 'Santosh Majhi', '11234566', 'wekan.com', 0),
-(6, 'JSPL', '9438753143', '9078640778', 'santoshmajhi99@gmail.com', 'Santosh Shann', '23234234', '', 0);
+INSERT INTO `client_table` (`client_id`, `org_name`, `mobile`, `phone`, `email`, `contact_person`, `GSTN_No`, `web`, `is_deleted`, `address`) VALUES
+(4, 'Canon', '9438753143', '9078640778', 'soumya@gmail.com', 'Soumya Mohanty', '5454545', 'jakdjfkla', 0, NULL),
+(5, 'JIndal', '9078640778', '9078640778', 'santoshmajhi99@gmail.com', 'Santosh Majhi', '11234566', 'wekan.com', 0, 'jajpur'),
+(6, 'JSPL', '9438753143', '9078640778', 'santoshmajhi99@gmail.com', 'Santosh Shann', '23234234', '', 0, NULL),
+(7, 'Santosh', '9078640778', '9078640778', 'santoshmajhi99@gmail.com', 'Santosh Majhi', '123654987', 'teknobiz.in', 0, 'Bhupinder Sohata Ct djkfhkjasd asdfa'),
+(8, 'test', '1234567890', '9868369258', 'test@gmail.com', 'test', '', 'dsfasdf', 0, 'adfasdfasdf'),
+(9, 'TATA', '9078640778', '9438753143', 'aurobind@gmail.com', 'Aurobind', '', 'jkaj', 0, 'Kaling nagar, Jajpur,Odisha'),
+(10, 'TATA', '9078640778', '9438753143', 'aurobind@gmail.com', 'Aurobind', '', 'jkaj', 0, 'Kaling nagar, Jajpur,Odisha'),
+(11, 'sdfsdfg', '545454545454', NULL, 'sfgsd@gmail.com', 'sdfgsdfg', '7878978787', 'kjkajfdk', 0, 'kjkajfkjakf'),
+(12, 'adfklj', '8989898989', NULL, 'jskfkajk@gmail.com', 'kkljadfjk', '546468787', 'jkajdfkja', 0, 'nadjklajf'),
+(13, 'lkjadfkljadksf', '9989898988', NULL, 'dsjkjds@gmail.com', 'jkljaskjksdf', '45454', 'lkladfl', 0, 'lkalkl'),
+(14, 'asdfasdfa', '98789895545', NULL, 'asfasdfa@gmail.com', 'adfasdf', '99898989', 'klakdlkf', 0, 'lklakfl');
 
 -- --------------------------------------------------------
 
@@ -86,7 +95,10 @@ CREATE TABLE `enquiry_item_table` (
 
 INSERT INTO `enquiry_item_table` (`item_id`, `enq_id`, `item_name`, `description`, `quantity`, `uom`) VALUES
 (9, 5, 'CCTV', NULL, 5, 'PC'),
-(10, 5, 'Mouse', NULL, 25, 'PC');
+(10, 5, 'Mouse', NULL, 25, 'PC'),
+(11, 6, 'Monitor', NULL, 4, 'PC'),
+(12, 6, 'UPS', NULL, 30, 'PC'),
+(13, 6, 'Hard Disk', NULL, 25, 'pc');
 
 -- --------------------------------------------------------
 
@@ -110,7 +122,8 @@ CREATE TABLE `enquiry_table` (
 --
 
 INSERT INTO `enquiry_table` (`enq_id`, `client_id`, `enq_date`, `due_date`, `ref_no`, `status`, `remarks`, `is_deleted`) VALUES
-(5, 5, '2017-07-11', '2017-07-13', 'TEK/ENQ/5', 'Purchase order added', NULL, 0);
+(5, 5, '2017-07-11', '2017-07-13', 'TEK/ENQ/5', 'Purchase order added', NULL, 0),
+(6, 4, '2017-07-28', '2017-08-15', 'TEK/ENQ/6', 'Quotation added', NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -154,6 +167,9 @@ CREATE TABLE `purchase_order_details_table` (
   `description` text,
   `quantity` int(11) DEFAULT NULL,
   `price` float NOT NULL,
+  `hsn_no` text,
+  `tax` float NOT NULL DEFAULT '0',
+  `tax_price` float NOT NULL DEFAULT '0',
   `net_amount` float NOT NULL,
   `item_code` int(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -162,9 +178,9 @@ CREATE TABLE `purchase_order_details_table` (
 -- Dumping data for table `purchase_order_details_table`
 --
 
-INSERT INTO `purchase_order_details_table` (`po_details_id`, `po_id`, `quot_det_id`, `delivery_date`, `description`, `quantity`, `price`, `net_amount`, `item_code`) VALUES
-(5, 3, 4, '2017-07-26', '', 5, 2000, 9550, NULL),
-(6, 3, 4, '2017-07-28', '', 25, 250, 6093.75, NULL);
+INSERT INTO `purchase_order_details_table` (`po_details_id`, `po_id`, `quot_det_id`, `delivery_date`, `description`, `quantity`, `price`, `hsn_no`, `tax`, `tax_price`, `net_amount`, `item_code`) VALUES
+(7, 4, 9, '2017-07-31', 'This is a demo details', 4, 1500, '123654987', 15, 859.5, 5730, 0),
+(8, 4, 10, '2017-07-31', 'Demo details for description', 25, 250, '36548976', 25, 1484.38, 5937.5, 0);
 
 -- --------------------------------------------------------
 
@@ -184,7 +200,7 @@ CREATE TABLE `purchase_order_table` (
 --
 
 INSERT INTO `purchase_order_table` (`po_id`, `quot_id`, `po_no`, `po_date`) VALUES
-(3, 4, '5465897', '2017-07-25');
+(4, 5, '4252523523', '2017-07-30');
 
 -- --------------------------------------------------------
 
@@ -199,6 +215,9 @@ CREATE TABLE `quotaion_details_table` (
   `price` float NOT NULL,
   `discount` float DEFAULT NULL,
   `tot_price` float NOT NULL,
+  `hsn_no` varchar(250) DEFAULT NULL,
+  `tax` float NOT NULL DEFAULT '0',
+  `tax_price` float NOT NULL DEFAULT '0',
   `valid_upto` date DEFAULT NULL,
   `description` text,
   `is_deleted` tinyint(4) NOT NULL DEFAULT '0'
@@ -208,9 +227,12 @@ CREATE TABLE `quotaion_details_table` (
 -- Dumping data for table `quotaion_details_table`
 --
 
-INSERT INTO `quotaion_details_table` (`quot_det_id`, `quot_id`, `item_id`, `price`, `discount`, `tot_price`, `valid_upto`, `description`, `is_deleted`) VALUES
-(7, 4, 9, 2500, 4.5, 11937.5, '2017-07-29', 'Test Description updated', 0),
-(8, 4, 10, 200, 2.5, 4875, '2017-07-28', 'test Description', 0);
+INSERT INTO `quotaion_details_table` (`quot_det_id`, `quot_id`, `item_id`, `price`, `discount`, `tot_price`, `hsn_no`, `tax`, `tax_price`, `valid_upto`, `description`, `is_deleted`) VALUES
+(9, 5, 9, 1500, 4.5, 7162.5, '123654987', 15, 1074.38, '2017-08-01', 'This is a demo details', 0),
+(10, 5, 10, 250, 5, 5937.5, '36548976', 25, 1484.38, '2017-08-01', 'Demo details for description', 0),
+(11, 8, 11, 12000, 3.5, 46320, '454545', 3, 1389.6, '2017-07-31', '22 HP Monitor', 0),
+(12, 8, 12, 4500, 2.5, 131625, '8989898', 2, 2632.5, '2017-08-09', 'Frontech UPS', 0),
+(13, 8, 13, 5000, 0, 125000, '89898989', 5, 6250, '2017-08-04', '500 GB hard disk', 0);
 
 -- --------------------------------------------------------
 
@@ -231,7 +253,10 @@ CREATE TABLE `quotaion_table` (
 --
 
 INSERT INTO `quotaion_table` (`quot_id`, `enq_id`, `quot_date`, `ref_no`, `is_deleted`) VALUES
-(4, 5, '2017-07-26', 'TEK/QUOT/4', 0);
+(5, 5, '2017-07-29', 'TEK/QUOT/5', 0),
+(6, 6, '2017-07-28', 'TEK/QUOT/6', 1),
+(7, 6, '2017-07-28', 'TEK/QUOT/7', 1),
+(8, 6, '2017-07-28', 'TEK/QUOT/8', 0);
 
 -- --------------------------------------------------------
 
@@ -247,6 +272,9 @@ CREATE TABLE `quotation_details_history_table` (
   `price` float NOT NULL,
   `discount` float NOT NULL,
   `total_price` float NOT NULL,
+  `hsn_no` varchar(250) DEFAULT NULL,
+  `tax` float NOT NULL DEFAULT '0',
+  `tax_price` float NOT NULL DEFAULT '0',
   `valid_upto` date NOT NULL,
   `description` text
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -255,15 +283,9 @@ CREATE TABLE `quotation_details_history_table` (
 -- Dumping data for table `quotation_details_history_table`
 --
 
-INSERT INTO `quotation_details_history_table` (`quot_det_his_id`, `history_id`, `quot_id`, `item_id`, `price`, `discount`, `total_price`, `valid_upto`, `description`) VALUES
-(11, 15, 4, 9, 3000, 4.5, 14325, '2017-07-20', ''),
-(12, 15, 4, 10, 250, 2.5, 6093.75, '2017-07-27', ''),
-(13, 16, 4, 9, 2500, 4.5, 11937.5, '2017-07-29', ''),
-(14, 16, 4, 10, 200, 2.5, 4875, '2017-07-28', ''),
-(15, 17, 4, 9, 2500, 4.5, 11937.5, '2017-07-29', ''),
-(16, 17, 4, 10, 200, 2.5, 4875, '2017-07-28', ''),
-(17, 18, 4, 9, 2500, 4.5, 11937.5, '2017-07-29', 'Test Description'),
-(18, 18, 4, 10, 200, 2.5, 4875, '2017-07-28', 'test Description');
+INSERT INTO `quotation_details_history_table` (`quot_det_his_id`, `history_id`, `quot_id`, `item_id`, `price`, `discount`, `total_price`, `hsn_no`, `tax`, `tax_price`, `valid_upto`, `description`) VALUES
+(21, 20, 5, 9, 1500, 4.5, 7162.5, '123654987', 15, 1074.38, '2017-07-31', 'This is a demo details'),
+(22, 20, 5, 10, 250, 5, 5937.5, '36548976', 25, 1484.38, '2017-07-31', 'Demo details for description');
 
 -- --------------------------------------------------------
 
@@ -282,10 +304,7 @@ CREATE TABLE `quotation_history_table` (
 --
 
 INSERT INTO `quotation_history_table` (`quot_his_id`, `quot_id`, `quot_date`) VALUES
-(15, 4, '2017-07-12'),
-(16, 4, '2017-07-26'),
-(17, 4, '2017-07-26'),
-(18, 4, '2017-07-26');
+(20, 5, '2017-07-28');
 
 -- --------------------------------------------------------
 
@@ -400,7 +419,7 @@ ALTER TABLE `user_table`
 -- AUTO_INCREMENT for table `client_table`
 --
 ALTER TABLE `client_table`
-  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `client_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- AUTO_INCREMENT for table `collection_table`
 --
@@ -410,12 +429,12 @@ ALTER TABLE `collection_table`
 -- AUTO_INCREMENT for table `enquiry_item_table`
 --
 ALTER TABLE `enquiry_item_table`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT for table `enquiry_table`
 --
 ALTER TABLE `enquiry_table`
-  MODIFY `enq_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `enq_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- AUTO_INCREMENT for table `invoice_details_table`
 --
@@ -430,32 +449,32 @@ ALTER TABLE `invoice_table`
 -- AUTO_INCREMENT for table `purchase_order_details_table`
 --
 ALTER TABLE `purchase_order_details_table`
-  MODIFY `po_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `po_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `purchase_order_table`
 --
 ALTER TABLE `purchase_order_table`
-  MODIFY `po_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `po_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `quotaion_details_table`
 --
 ALTER TABLE `quotaion_details_table`
-  MODIFY `quot_det_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `quot_det_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT for table `quotaion_table`
 --
 ALTER TABLE `quotaion_table`
-  MODIFY `quot_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `quot_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `quotation_details_history_table`
 --
 ALTER TABLE `quotation_details_history_table`
-  MODIFY `quot_det_his_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `quot_det_his_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT for table `quotation_history_table`
 --
 ALTER TABLE `quotation_history_table`
-  MODIFY `quot_his_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `quot_his_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT for table `user_table`
 --

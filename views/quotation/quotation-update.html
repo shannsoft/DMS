@@ -38,11 +38,13 @@
                       <thead> 
                         <tr> 
                           <th>SL No</th> 
-                          <th>Item</th> 
+                          <th>Item</th>
+                          <th>HSN Code</th>
                           <th>Quo</th> 
                           <th>UOM</th> 
                           <th>Price</th> 
                           <th>Disc(%)</th> 
+                          <th>TAX(%)</th> 
                           <th>Net Amount</th> 
                           <th>Valid upto</th> 
                           <th>Description</th> 
@@ -52,10 +54,12 @@
                           <tr ng-repeat="item in quotaionDetails.itemList"> 
                             <td>{{$index+1}}</td> 
                             <td>{{item.item_name}}</td> 
+                            <td><input type="text" class="form-control" placeholder="HSN No" ng-model="item.hsn_no"></td>
                             <td>{{item.quantity}}</td> 
                             <td>{{item.uom}}</td> 
                             <td><input type="number" class="form-control" placeholder="Price" ng-model="item.price" required ng-change="calculateQuotPrice(item)"></td> 
-                            <td><input type="number" is-number class="form-control" placeholder="Discount" ng-model="item.discount" required ng-change="calculateQuotPrice(item)"></td> 
+                            <td><input type="number" is-number class="form-control" placeholder="Discount" ng-model="item.discount" required ng-change="calculateQuotPrice(item)"></td>
+                            <td><input type="number" class="form-control" placeholder="Tax" ng-model="item.tax" ng-change="calculateQuotPrice(item)"></td> 
                             <td><input readonly type="number" class="form-control" placeholder="Total" ng-model="item.tot_price" required></td> 
                             <td><input type="date" class="form-control" placeholder="Exp Date" ng-model="item.date" required></td> 
                             <td width="15%"><textarea class="form-control" placeholder="Desc.." ng-model="item.description"></textarea></td> 

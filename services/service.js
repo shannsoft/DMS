@@ -226,6 +226,26 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response;
     },
+    getPoList : function(){
+      var response = $http({
+        method: 'GET',
+        url: CONFIG.HTTP_HOST+'?reqmethod=poList',
+        headers: {
+            'Accesstoken':localStorage.getItem('accessToken')
+        }
+      });
+      return response
+    },
+    getPoDetails : function(id){
+      var response = $http({
+        method: 'GET',
+        url: CONFIG.HTTP_HOST+'?reqmethod=getPoDetails&id='+id,
+        headers: {
+            'Accesstoken':localStorage.getItem('accessToken')
+        }
+      });
+      return response
+    },
     getUser: function (id) {
       var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserById&id="+id);
       return response;

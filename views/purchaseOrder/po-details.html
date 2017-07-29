@@ -1,0 +1,68 @@
+<section class="content-header m-b-40">
+  <h1>
+    Purchase Order Details
+    <small>Preview</small>
+  </h1>
+</section>
+<section class="content invoice" ng-init="loadPoDetails()">
+  <div class="row">
+    <div class="col-xs-12">
+      <h2 class="page-header">
+        <i class="fa fa-globe"></i> Purchase Order .
+        <small class="pull-right">Date: {{poDetails.po_date | dateformat}}</small>
+      </h2>
+    </div>
+  </div>
+  <div class="row invoice-info">
+    <div class="col-sm-6 invoice-col">
+      <address>
+        <strong>{{poDetails.org_name}}</strong><br>
+        Enquiry Date : {{poDetails.enq_date | dateformat}}<br>
+        Enquiry Ref : {{poDetails.enq_ref}}<br>
+        Quotation Date : {{poDetails.quot_date | dateformat}}<br>
+        Quotation Ref : {{poDetails.quot_ref}}<br>
+      </address>
+    </div>
+    <div class="col-sm-6 invoice-col">
+      <address>
+        <strong>Purchase order No : {{poDetails.po_no}}</strong><br>
+        Contact Person : {{poDetails.contact_person}}<br>
+        Email ID : {{poDetails.email}}<br>
+        Mobile : {{poDetails.mobile }}<br>
+        GSTN No : {{poDetails.gstn_no}}<br>
+      </address>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 table-responsive">
+    <table ng-table="tablePo" class="table table-bordered table-hover">
+        <tr ng-repeat="row in $data">
+          <td data-title="'Sl No'" >{{ $index + 1}}</td>
+          <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
+          <td data-title="'HSN No'" sortable="'hsn_no'">{{row.hsn_no}}</td>
+          <td style="width:25%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
+          <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
+          <td data-title="'Price'" sortable="'price'">{{row.price.toFixed(2)}}</td>
+          <td data-title="'Discount'" sortable="'discount'">{{row.discount.toFixed(2)}}%</td>
+          <td data-title="'TAX'" sortable="'tax'">{{row.tax.toFixed(2)}}%</td>
+          <td data-title="'Delivery Date'" sortable="'delivery_date'">{{row.delivery_date | dateformat}}</td>
+          <td data-title="'Net Ammount'" sortable="'tot_price'">{{row.net_amount.toFixed(2)}}</td>
+        </tr>
+        <tr>
+          <td class="bold text-right border-none" colspan="10">Total Quot Price</td>
+          <td class="bold">{{poDetails.total_ammount.toFixed(2)}} /-</td>
+        </tr>
+        <tr>
+          <td class="bold text-right border-none" colspan="10">Tax Price</td>
+          <td class="bold">{{poDetails.tax_ammount.toFixed(2)}} /-</td>
+        </tr> 
+        <tr>
+          <td class="bold text-right border-none" colspan="10">Grand Total</td>
+          <td class="bold">{{poDetails.grand_total.toFixed(2)}} /-</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+<div class="clearfix"></div>
