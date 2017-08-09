@@ -16,17 +16,12 @@
           <i class="fa fa-dashboard"></i> <span>Dashboard</span>
         </a>
       </li>
-      <li class="treeview" ng-class="{'active':stateName == 'client' || stateName == 'new-client' || stateName == 'client-details'}">
+      <li class="treeview" ng-class="{'active':stateName == 'client' || stateName == 'new-client' || stateName == 'client-details' || stateName == 'client-edit'}">
         <a href="" ui-sref="client">
           <i class="fa fa-users"></i>
           <span>Clients</span>
         </a>
       </li>
-      <!-- <li>
-        <a href="" ui-sref="users">
-          <i class="fa fa-th"></i> <span>User Management</span>
-        </a>
-      </li> -->
       <li ng-class="{'active':stateName == 'enquiry' || stateName == 'new-enquiry' || stateName == 'enquiry-details' || stateName == 'enquiry-update'}">
         <a href="" ui-sref="enquiry" >
           <i class="fa fa-files-o"></i> <span>Enquiry</span>
@@ -40,6 +35,11 @@
       <li class="treeview" ng-class="{'active':stateName == 'purchase-order' || stateName == 'po-details' || stateName == 'po-list'}">
         <a href="" ui-sref="po-list">
           <i class="fa fa-building-o"></i><span>Purchase Order</span>
+        </a>
+      </li>
+      <li class="treeview" ng-class="{'active':stateName == 'bill' || stateName == 'bill-list'}">
+        <a href="" ui-sref="bill-list">
+          <i class="fa fa-book"></i><span>Bill</span>
         </a>
       </li>
     </ul>

@@ -1,4 +1,4 @@
-var app = angular.module("doc_app", ['ui.router', 'ui.bootstrap', 'ngResource', 'ngStorage', 'ngAnimate','datePicker','ngTable']);
+var app = angular.module("doc_app", ['ui.router', 'ui.bootstrap', 'ngResource', 'ngStorage', 'ngAnimate','datePicker','ngTable','long2know','angular.filter']);
 app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/login');
   $stateProvider
@@ -147,6 +147,22 @@ app.config(function($stateProvider, $urlRouterProvider) {
     resolve: {
       loggedout: checkLoggedout
     }
+  })
+  .state('bill', {
+    templateUrl: 'views/purchaseOrder/bill.html',
+    url: '/bill/:poId',
+    controller:'QuotController',
+    // resolve: {
+    //   loggedout: checkLoggedout
+    // }
+  })
+  .state('bill-list', {
+    templateUrl: 'views/purchaseOrder/bill-list.html',
+    url: '/bill-list',
+    controller:'QuotController',
+    // resolve: {
+    //   loggedout: checkLoggedout
+    // }
   })
 
   function checkLoggedout($q, $timeout, $rootScope, $state, $localStorage) {

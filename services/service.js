@@ -286,3 +286,14 @@ app.factory("userService", function ($http,CONFIG) {
     }
   }
 });
+app.factory("UserModel", function(){
+  var selected_item = [];
+  return{
+    setSelectedItem : function(data){
+      selected_item = data;
+    },
+    getSelectedItem : function(){
+      return selected_item;
+    }
+  }
+})

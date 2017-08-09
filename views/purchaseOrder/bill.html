@@ -1,0 +1,179 @@
+<section class="content-header m-b-40">
+  <h1 class="pull-left">
+   Bill
+  </h1>
+  <button class="btn btn-default m-l-5 pull-right" ng-click="printBill('bill')"><i class="fa fa-print"></i> Print</button>
+  <button class="btn btn-primary m-l-5 pull-right" ui-sref="new-client"><i class="fa fa-cloud"></i> Save</button>
+</section>
+<section class="content" ng-init="loadSelectedPo()">
+  <div class="row">
+  	<div class="col-xs-12 m-b-20">
+  		<multiselect class='input-xlarge multiselect' ng-model='selected_item' header='Select Po Sl No' options='po.po_sl_no for po in poDetails.itemList' multiple='true' required enable-filter='true' filter-placeholder='Filter stuff..'></multiselect>
+  	</div>
+    <div class="col-xs-12">
+	    <div class="box">
+		    <div class="box-body table-responsive" id="bill">
+		    <table class="table table-bordered billing-table">
+		    	<tr>
+	    			<td colspan="12"><strong><h3 class="text-center"><em>GST   INVOICE</em></h3></strong> </td>
+	    			<!-- <td colspan="6"><h3><em>(ORIGINAL FOR RECIPIENT)</em></h3></td> -->
+	    		</tr>
+				<tr> 
+					<td rowspan="3" colspan="5">
+						<h4 class="m-t-0"><strong>Teknobiz Solutions Pvt.Ltd.</strong></h4>
+						<p>Plot No. 207, Ground Floor, Sahid Nagar,<br/>
+						Bhubaneswar ,Odisha-751007.<br/>
+						Tel.No. 9861360059 <br/>
+						GSTIN/UIN : 21AADCT2536N2ZB . Dt - 28 Jun, 2017 </p>
+					</td>
+					<td colspan="4"><em>Invoice No.-GST/JSPL/011/17-18</em></td>
+		    		<td colspan="3"><em>Dated - {{currentDate | dateformat}}</em></td>
+				</tr>
+				<tr> 
+					<td colspan="4" style="width:10%"><em>Delivery Note:</em> <div class="inline-block" contenteditable data-directive ng-model="text"></div></td>
+					<td colspan="3"><em>Mode/Terms of Payment:100% payment</em></td>
+				</tr>
+				<tr> 
+					<td colspan="4"><em>Buyer's Order No.: {{poDetails.po_no}}</em></td>
+					<td colspan="3"><em>Dated - {{poDetails.po_date | dateformat}}</em></td>
+				</tr>
+				<tr> 
+					<td rowspan="4" colspan="5">
+					<h4 class="m-t-0"><strong>{{poDetails.org_name}},</strong></h4>
+					 	<p>{{poDetails.address}}<br/></p>
+						GSTIN/UIN : <div class="inline-block" contenteditable data-directive ng-model="poDetails.gstn_no"></div>
+					</td>
+					<td colspan="4"><em>Despatch Document No.</em><div class="inline-block" contenteditable data-directive ng-model="poDetails.doc_no"></div></td>
+					<td colspan="3"><em>Delivery Note Date- </em><div class="inline-block" contenteditable data-directive ng-model="poDetails.delivery_note_date"></div></td>
+				</tr>
+				<tr> 
+					<td colspan="3"><em>Despatched Through</em><div class="inline-block" contenteditable data-directive ng-model="poDetails.delivery_through"></div></td>
+					<td colspan="3"><em>Destination</em><div class="inline-block" contenteditable data-directive ng-model="poDetails.destination"></div>	</td>
+				</tr>
+				<tr> 
+					<td colspan="6"><em>Terms of Delivery</em> <div class="inline-block" contenteditable data-directive ng-model="poDetails.terms"></div></td>
+				</tr>
+				<tr> 
+					<td height="20" colspan="6"></td>
+				</tr>
+				<tr class="text-center"> 
+					<th><em>Sl. No</em></th>
+					<th><em>Po Sl No</em></th>
+					<th><em>Material Code</em></th>
+					<th><em>Material Description</em></th>
+					<th><em>HSN/SAC</em></th>
+					<th><em>GST Rate %</em></th>
+					<th><em>Qty</em></th>
+					<th><em>Rate/Each in Rs.</em></th>
+					<th><em>Per</em></th>
+					<th><em>Disc%</em></th>
+					<th><em>Amount</em></th>
+				</tr>
+				<tr ng-repeat="bill in selected_po" class="text-center"> 
+					<td>{{$index+1}}</td>
+					<td>{{bill.po_sl_no}}</td>
+					<td>{{bill.item_code}}</td>
+					<td>{{bill.description}}</td>
+					<td>{{bill.hsn_no}}</td>
+					<td>{{bill.tax}}%</td>
+					<td><div class="inline-block" contenteditable data-directive ng-model="bill.quantity" ng-change="billCalculation(bill)"></div></td>
+					<td>{{bill.price}}</td>
+					<td>{{bill.uom}}</td>
+					<td>{{bill.discount}}</td>
+					<td class="text-right">{{bill.net_amount}}</td>
+				</tr>
+				<tr> 
+					<td colspan="10" class="text-right">SGST</td>
+					<td class="text-right"> {{(tax_amount / 2).toFixed(2)}} </td>
+				</tr>
+				<tr> 
+					<td colspan="10" class="text-right">CGST</td>
+					<td class="text-right"> {{(tax_amount/2).toFixed(2)}} </td>
+				</tr>
+				<tr> 
+					<td colspan="10" class="text-right">TOTAL AMOUNT</td>
+					<td class="text-right">{{rounded_amount.toFixed(2)}}</td>
+				</tr>
+				<tr> 
+					<td colspan="10" class="text-right">Rounded off</td>
+					<td class="text-right"> {{rounded_amount.toFixed(0)}} </td>
+				</tr>
+				<tr> 
+					<td colspan="10">Amount Chargeable(In Words):- {{rounded_amount.toFixed(0) | words}}</td>
+					<td>E. & O.E.</td>
+				</tr>
+				<tr> 
+					<td height="20" colspan="12"></td>
+				</tr>
+				<tr class="text-center"> 
+					<td rowspan="2" colspan="6" class="text-center">HSN/SAC</td>
+					<td rowspan="2">Taxable Value</td>
+					<td colspan="2">Central Tax	</td>
+					<td colspan="2">State Tax</td>
+				</tr>
+				<tr class="text-center"> 
+					<td>Rate %</td>
+					<td>Amount</td>
+					<td>Rate %</td>
+					<td>Amount</td>
+				</tr>
+				<tr ng-repeat="(key, value) in selected_po | groupBy: 'hsn_no'" class="text-center"> 
+					<td colspan="6" class="text-center">{{key}}</td>
+					<td class="text-right">{{getVolumeSum(value,'amount').toFixed(2)}}</td>
+					<td>{{value[0].tax/2}}</td>
+					<td class="text-right">{{getVolumeSum(value,'tax').toFixed(2)}}</td>
+					<td>{{value[0].tax/2}}</td>
+					<td class="text-right"> {{getVolumeSum(value,'tax').toFixed(2)}}</td>
+				</tr>
+				<tr> 
+					<td colspan="6" class="text-center">Total</td>
+					<td class="text-right">{{taxable_amount}}</td>
+					<td></td>
+					<td class="text-right"> {{(tax_amount/2).toFixed(2)}}</td>
+					<td></td>
+					<td class="text-right"> {{(tax_amount/2).toFixed(2)}}</td>
+				</tr>
+				<tr> 
+					<td colspan="12">Tax Amount(in Word):- {{tax_amount | words}}.</td>
+				</tr>
+				<tr> 
+					<td rowspan="3" colspan="6"></td>
+					<td colspan="3">Company's Bank Details</td>
+					<td colspan="3"></td>
+				</tr>
+				<tr> 
+					<td colspan="3">Bank Name </td>
+					<td colspan="3">KOTAK MAHINDRA BANK </td>
+				</tr>
+				<tr> 
+					<td colspan="3">A/c No. </td>
+					<td colspan="3">9311921448 </td>
+				</tr>
+				<tr>
+					<td colspan="3">Company's PAN </td>
+					<td colspan="3">AADCT2536N</td>
+					<td colspan="3">Branch & IFS Code</td>
+					<td colspan="3">KKBK0000493 </td>
+				</tr>
+				<tr> 
+					<td colspan="6">Declaration </td>
+					<td colspan="6"></td>
+				</tr>
+				<tr> 
+					<td rowspan="4" colspan="6">We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct </td>
+				</tr>
+				<tr>
+					<td colspan="6" class="text-center"><strong><em>For Teknobiz Solutios Pvt. Ltd.</em></strong></td>
+				</tr>
+				<tr>				
+					<td height="40" colspan="6"></td>
+				</tr>
+				<tr>				
+					<td colspan="6" class="text-center"><strong><em>AUTHORIZED SIGNATORY</em></strong> </td>
+				</tr>
+			</table>
+		    </div>
+	    </div>
+    </div>
+   </div>
+</section>

@@ -724,7 +724,7 @@ header('Access-Control-Allow-Origin: *');
 					$count = sizeof($po_data['itemList']);
 					if($count > 0){
 						$item_list = $po_data['itemList'];
-						$query = "INSERT INTO ".self::poDetTable."(po_id, quot_det_id, delivery_date, description, quantity, price, hsn_no, tax, tax_price, net_amount, item_code) VALUES ";
+						$query = "INSERT INTO ".self::poDetTable."(po_id, quot_det_id, delivery_date, description, quantity, price, hsn_no, tax, tax_price, net_amount, item_code,unbilled_qty, po_sl_no) VALUES ";
 						$comma = ', ';
 						for ($i = 0; $i < $count; $i++) {
 							if($i == $count-1)
@@ -735,7 +735,7 @@ header('Access-Control-Allow-Origin: *');
 							$tax  = (isset($item_list[$i]["tax"])) ? $item_list[$i]["tax"] : 0;
 							$tax_price  = (isset($item_list[$i]["tax_price"])) ? $item_list[$i]["tax_price"] : 0;
 
-							$query.="('$po_id','".$item_list[$i]["quot_det_id"]."','".$item_list[$i]["delivery_date"]."','".$description."','".$item_list[$i]["quantity"]."','".$item_list[$i]["price"]."','".$hsn_no."','".$tax."','".$tax_price."','".$item_list[$i]["tot_price"]."','$item_code')".$comma;
+							$query.="('$po_id','".$item_list[$i]["quot_det_id"]."','".$item_list[$i]["delivery_date"]."','".$description."','".$item_list[$i]["quantity"]."','".$item_list[$i]["price"]."','".$hsn_no."','".$tax."','".$tax_price."','".$item_list[$i]["tot_price"]."',$item_code,'".$item_list[$i]["quantity"]."','".$item_list[$i]["po_sl_no"]."')".$comma;
 						}
 						$this->executeGenericDMLQuery($query);
 						$sql_query = "UPDATE ".self::enqTable." set status='Purchase order added' where enq_id=".$enq_id;
@@ -884,7 +884,7 @@ header('Access-Control-Allow-Origin: *');
 			$headers = apache_request_headers();
 			if($headers['Accesstoken']){
 				$po_id = $this->_request['id'];
-				$sql = "select a.po_id, a.quot_id, a.po_no, a.po_date, b.enq_id, b.quot_date, b.ref_no as quot_ref, c.client_id, c.enq_date, c.due_date, c.ref_no as enq_ref, c.status, c.remarks, d.org_name, d.mobile, d.phone, d.email, d.contact_person, d.GSTN_No, d.web from purchase_order_table a INNER JOIN quotaion_table b ON a.quot_id = b.quot_id INNER JOIN enquiry_table c ON b.enq_id = c.enq_id INNER JOIN client_table d ON c.client_id = d.client_id where a.po_id=".$po_id;
+				$sql = "select a.po_id, a.quot_id, a.po_no, a.po_date, b.enq_id, b.quot_date, b.ref_no as quot_ref, c.client_id, c.enq_date, c.due_date, c.ref_no as enq_ref, c.status, c.remarks, d.org_name,d.address, d.mobile, d.phone, d.email, d.contact_person, d.GSTN_No, d.web from purchase_order_table a INNER JOIN quotaion_table b ON a.quot_id = b.quot_id INNER JOIN enquiry_table c ON b.enq_id = c.enq_id INNER JOIN client_table d ON c.client_id = d.client_id where a.po_id=".$po_id;
 				$rows = $this->executeGenericDQLQuery($sql);
 				$data = array();
 				if($rows){
@@ -908,7 +908,8 @@ header('Access-Control-Allow-Origin: *');
 					$data['contact_person'] = $rows[0]['contact_person'];
 					$data['gstn_no'] = $rows[0]['GSTN_No'];
 					$data['web'] = $rows[0]['web'];
-					$query = "select a.po_details_id, a.po_id, a.quot_det_id, a.delivery_date, a.description, a.quantity, a.price, a.hsn_no, a.tax, a.tax_price, a.net_amount,a.item_code, b.item_id, b.discount, c.item_name,c.uom from purchase_order_details_table a INNER JOIN  quotaion_details_table b ON a.quot_det_id = b.quot_det_id INNER JOIN enquiry_item_table c ON b.item_id = c.item_id where a.po_id=".$po_id;
+					$data['address'] = $rows[0]['address'];
+					$query = "select a.po_details_id, a.po_id, a.quot_det_id, a.delivery_date, a.description, a.quantity, a.price, a.hsn_no, a.tax, a.tax_price, a.net_amount,a.item_code, a.unbilled_qty, a.po_sl_no, b.item_id, b.discount, c.item_name,c.uom from purchase_order_details_table a INNER JOIN  quotaion_details_table b ON a.quot_det_id = b.quot_det_id INNER JOIN enquiry_item_table c ON b.item_id = c.item_id where a.po_id=".$po_id;
 					$result = $this->executeGenericDQLQuery($query);
 					if($result){
 						$po_item = array();
@@ -929,6 +930,8 @@ header('Access-Control-Allow-Origin: *');
 							$po_item[$i]['item_id'] = $result[$i]['item_id'];
 							$po_item[$i]['discount'] = (float)$result[$i]['discount'];
 							$po_item[$i]['item_name'] = $result[$i]['item_name'];
+							$po_item[$i]['unbilled_qty'] = $result[$i]['unbilled_qty'];
+							$po_item[$i]['po_sl_no'] = $result[$i]['po_sl_no'];
 							$po_item[$i]['uom'] = $result[$i]['uom'];
 							$total_amount = $total_amount + ((float)$result[$i]['net_amount']);
 							$tax_amount = $tax_amount + ((float)$result[$i]['tax_price']);

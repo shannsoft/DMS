@@ -2,6 +2,7 @@ app.controller("Main_Controller",function($scope,$rootScope,$state,$localStorage
   /*******************************************************/
   /*************This is use for check user login**********/
   /*******************************************************/
+  
   // $scope.getUseDetails();
   $scope.getUseDetails = function(){
     if(localStorage.getItem('accessToken')){

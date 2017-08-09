@@ -35,13 +35,15 @@
   </div>
   <div class="row">
     <div class="col-xs-12 table-responsive">
-    <table ng-table="tablePo" class="table table-bordered table-hover">
+      <table ng-table="tablePo" class="table table-bordered table-hover">
         <tr ng-repeat="row in $data">
           <td data-title="'Sl No'" >{{ $index + 1}}</td>
+          <td data-title="'PO SL No'" sortable="'po_sl_no'">{{row.po_sl_no}}</td>
           <td data-title="'Item'" sortable="'item_name'">{{row.item_name}}</td>
           <td data-title="'HSN No'" sortable="'hsn_no'">{{row.hsn_no}}</td>
-          <td style="width:25%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
+          <td style="width:20%" data-title="'Description'" sortable="'description'">{{row.description}}</td>
           <td data-title="'Quantity'" sortable="'quantity'">{{row.quantity}}</td>
+          <td data-title="'Unbilled Quantity'" sortable="'unbilled_qty'">{{row.unbilled_qty}}</td>
           <td data-title="'UOM'" sortable="'uom'">{{row.uom}}</td>
           <td data-title="'Price'" sortable="'price'">{{row.price.toFixed(2)}}</td>
           <td data-title="'Discount'" sortable="'discount'">{{row.discount.toFixed(2)}}%</td>
@@ -50,18 +52,21 @@
           <td data-title="'Net Ammount'" sortable="'tot_price'">{{row.net_amount.toFixed(2)}}</td>
         </tr>
         <tr>
-          <td class="bold text-right border-none" colspan="10">Total Quot Price</td>
+          <td class="bold text-right border-none" colspan="12">Total Quot Price</td>
           <td class="bold">{{poDetails.total_ammount.toFixed(2)}} /-</td>
         </tr>
         <tr>
-          <td class="bold text-right border-none" colspan="10">Tax Price</td>
+          <td class="bold text-right border-none" colspan="12">Tax Price</td>
           <td class="bold">{{poDetails.tax_ammount.toFixed(2)}} /-</td>
         </tr> 
         <tr>
-          <td class="bold text-right border-none" colspan="10">Grand Total</td>
+          <td class="bold text-right border-none" colspan="12">Grand Total</td>
           <td class="bold">{{poDetails.grand_total.toFixed(2)}} /-</td>
         </tr>
       </table>
+    </div>
+    <div class="col-xs-12 m-t-40">
+      <button class="btn btn-primary m-l-5 pull-right" ng-click="openSelectModal()">Generate bill</button>
     </div>
   </div>
 </section>

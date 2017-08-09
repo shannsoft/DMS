@@ -1,0 +1,12 @@
+<div class="modal-default">
+  <div class="modal-header">
+    <h3 class="modal-title">Select PO Sl No</h3>
+</div>
+<div class="modal-body">
+    <multiselect class='input-xlarge multiselect' ng-model='selected_po' header='Select Po Sl No' options='po.po_sl_no for po in po_list' multiple='true' required enable-filter='true' filter-placeholder='Filter stuff..'></multiselect>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">Generate Bill</button>
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>
+</div>
