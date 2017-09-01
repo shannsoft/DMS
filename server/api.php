@@ -22,6 +22,8 @@ header('Access-Control-Allow-Origin: *');
 		const poDetTable = "purchase_order_details_table";
 		const quotHisTable = "quotation_history_table";
 		const quotDetHisTable = "quotation_details_history_table";
+		const invoiceTable = "invoice_table";
+		const invoiceDetTable = "invoice_details_table";
 
 		const fileUploadPath = "files/";
 		private $db = NULL;
@@ -975,8 +977,187 @@ header('Access-Control-Allow-Origin: *');
 				$this->sendResponse(404,'faild','Unauthorized user');
 			}
 		}
-	}
+		public function generateBill(){
+			if (date('m') > 3) {
+			    $year = date('y')."-".(date('y') +1);
+			}
+			else {
+			    $year = (date('y')-1)."-".date('y');
+			}
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$bill_info = $this->_request['bill_data'];
+				$po_id = $bill_info['po_id'];
+				$invoice_date = $bill_info['invoice_date'];
+				$gstn_no = $bill_info['gstn_no'];
+				$org_name = $bill_info['org_name'];
+				$sql = "INSERT INTO ".self::invoiceTable."(inv_date, po_id, gstn_no) VALUES ('$invoice_date','$po_id','$gstn_no')";
+				$result = $this->executeGenericDMLQuery($sql);
+				if($result){
+					$inv_id = mysql_insert_id();
+					$invoice_no = "GST/".$org_name."/".$inv_id."/".$year;
+					$sql = "update ".self::invoiceTable." set invoice_no='$invoice_no' where inv_id=".$inv_id;
+					$this->executeGenericDMLQuery($sql);
+					$data = array();
+					$data['invoice_id'] = $inv_id;
+					$count = sizeof($bill_info['itemList']);
+					if($count > 0){
+						$item_list = $bill_info['itemList'];
+						$query = "INSERT INTO ".self::invoiceDetTable."(inv_id, po_det_id, price, quantity) VALUES ";
+						$comma = ', ';
+						for ($i = 0; $i < $count; $i++) {
+							if($i == $count-1)
+								$comma = '';
+							$query.="('$inv_id','".$item_list[$i]["po_det_id"]."','".$item_list[$i]["price"]."','".$item_list[$i]["quantity"]."')".$comma;
+						}
+						$this->executeGenericDMLQuery($query);
+					}
+					$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
+				}
+			}
+			else{
+				$this->sendResponse(404,'faild','Unauthorized user');
+			}
+		}
+		public function getBillInfo(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$invoice_id = $this->_request['invoice_id'];
+				$query = "select a.inv_id, a.inv_date, a.invoice_no, a.po_id, a.gstn_no, a.price, a.tax_price, a.total_price,a.dis_doc_no, a.delivery_note, a.note_date, a.dispatch_through, a.destination, a.term_of_delivery, b.po_no, b.po_date,c.quot_id,d.client_id,e.org_name,e.address from invoice_table a INNER JOIN purchase_order_table b ON a.po_id = b.po_id INNER JOIN quotaion_table c ON b.quot_id = c.quot_id INNER JOIN enquiry_table d ON c.enq_id = d.enq_id INNER JOIN client_table e ON d.client_id = e.client_id where a.inv_id =".$invoice_id;
+				$result = $this->executeGenericDQLQuery($query);
+				if($result){
+					$data = array();
+					$data['invoice_date'] = $result[0]['inv_date'];
+					$data['inv_id'] = $result[0]['inv_id'];
+					$data['invoice_no'] = $result[0]['invoice_no'];
+					$data['po_id'] = $result[0]['po_id'];
+					$data['gstn_no'] = $result[0]['gstn_no'];
+					$data['price'] = (float)$result[0]['price'];
+					$data['tax_price'] = (float)$result[0]['tax_price'];
+					$data['net_amount'] = (float)$result[0]['total_price'];
+					$data['dis_doc_no'] = $result[0]['dis_doc_no'];
+					$data['delivery_note'] = $result[0]['delivery_note'];
+					$data['note_date'] = $result[0]['note_date'];
+					$data['dispatch_through'] = $result[0]['dispatch_through'];
+					$data['destination'] = $result[0]['destination'];
+					$data['term_of_delivery'] = $result[0]['term_of_delivery'];
+					$data['po_no'] = $result[0]['po_no'];
+					$data['po_date'] = $result[0]['po_date'];
+					$data['quot_id'] = $result[0]['quot_id'];
+					$data['org_name'] = $result[0]['org_name'];
+					$data['org_address'] = $result[0]['address'];
+					$query = "select z.inv_det_id, z.inv_id, z.po_det_id, z.price, z.quantity, a.po_details_id, a.po_id, a.quot_det_id, a.delivery_date, a.description, a.quantity, a.price, a.hsn_no, a.tax, a.tax_price, a.net_amount,a.item_code, a.unbilled_qty, a.po_sl_no, b.item_id, b.discount, c.item_name,c.uom from invoice_details_table z INNER JOIN purchase_order_details_table a ON z.po_det_id = a.po_details_id INNER JOIN  quotaion_details_table b ON a.quot_det_id = b.quot_det_id INNER JOIN enquiry_item_table c ON b.item_id = c.item_id where z.inv_id=".$invoice_id;
+					$result = $this->executeGenericDQLQuery($query);
+					if($result){
+						$po_item = array();
+						for($i = 0; $i < sizeof($result); $i++){
+							$po_item[$i]['po_details_id'] = $result[$i]['po_details_id'];
+							$po_item[$i]['quot_det_id'] = $result[$i]['quot_det_id'];
+							$po_item[$i]['delivery_date'] = $result[$i]['delivery_date'];
+							$po_item[$i]['description'] = $result[$i]['description'];
+							$po_item[$i]['quantity'] = $result[$i]['quantity'];
+							$po_item[$i]['price'] = (float)$result[$i]['price'];
+							$po_item[$i]['hsn_no'] = $result[$i]['hsn_no'];
+							$po_item[$i]['tax'] = (float)$result[$i]['tax'];
+							$po_item[$i]['tax_price'] = (float)$result[$i]['tax_price'];
+							$po_item[$i]['net_amount'] = (float)$result[$i]['net_amount'];
+							$po_item[$i]['item_code'] = $result[$i]['item_code'];
+							$po_item[$i]['item_id'] = $result[$i]['item_id'];
+							$po_item[$i]['discount'] = (float)$result[$i]['discount'];
+							$po_item[$i]['item_name'] = $result[$i]['item_name'];
+							$po_item[$i]['unbilled_qty'] = $result[$i]['unbilled_qty'];
+							$po_item[$i]['po_sl_no'] = $result[$i]['po_sl_no'];
+							$po_item[$i]['uom'] = $result[$i]['uom'];
+						}
+						$data['itemList'] = $po_item;
+					}
+					$this->sendResponse(200,'success',$this->messages['dataFetched'],$data);
+				}
+			}
+		}
+		public function updateBill(){
+			$headers = apache_request_headers();
+			if($headers['Accesstoken']){
+				$bill_info = $this->_request['bill_data'];
+				$gstn_no = $bill_info['gstn_no'];
+				$inv_id = $bill_info['inv_id'];
+				$comma = ',';
+				$previous = false;
+				$sql = "update ".self::invoiceTable." set gstn_no='$gstn_no'";
+				if(isset($bill_info['price'])){
+					$price = $bill_info['price'];
+					$sql .= "$comma price='$price'";
+					$previous = true;
+				}
+				if(isset($bill_info['tax_price'])){
+					$tax_price = $bill_info['tax_price'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma tax_price='$tax_price'";
+					$previous = true;
+				}
+				if(isset($bill_info['total_price'])){
+					$total_price = $bill_info['total_price'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma total_price='$total_price'";
+					$previous = true;
+				}
+				if(isset($bill_info['dis_doc_no'])){
+					$dis_doc_no = $bill_info['dis_doc_no'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma dis_doc_no='$dis_doc_no'";
+					$previous = true;
+				}
+				if(isset($bill_info['delivery_note'])){
+					$delivery_note = $bill_info['delivery_note'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma delivery_note='$delivery_note'";
+					$previous = true;
+				}
+				if(isset($bill_info['note_date'])){
+					$note_date = $bill_info['note_date'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma note_date='$note_date'";
+					$previous = true;
+				}
+				if(isset($bill_info['dispatch_through'])){
+					$dispatch_through = $bill_info['dispatch_through'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma dispatch_through='$dispatch_through'";
+					$previous = true;
+				}
+				if(isset($bill_info['destination'])){
+					$destination = $bill_info['destination'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma destination='$destination'";
+					$previous = true;
+				}
+				if(isset($bill_info['term_of_delivery'])){
+					$term_of_delivery = $bill_info['term_of_delivery'];
+					$comma = ($previous) ? ',' : '';
+					$sql .= "$comma term_of_delivery='$term_of_delivery'";
+					$previous = true;
+				}
+				$sql .= " where inv_id='$inv_id'";
+				$result = $this->executeGenericDMLQuery($sql);
 
+				$delete = "delete from ".self::invoiceDetTable." where inv_id=".$inv_id;
+				$this->executeGenericDMLQuery($delete);
+				$count = sizeof($bill_info['itemList']);
+				if($count > 0){
+					$item_list = $bill_info['itemList'];
+					$query = "INSERT INTO ".self::invoiceDetTable."(inv_id, po_det_id, price, quantity) VALUES ";
+					$comma = ', ';
+					for ($i = 0; $i < $count; $i++) {
+						if($i == $count-1)
+							$comma = '';
+						$query.="('$inv_id','".$item_list[$i]["po_details_id"]."','".$item_list[$i]["net_amount"]."','".$item_list[$i]["unbilled_qty"]."')".$comma;
+					}
+					$this->executeGenericDMLQuery($query);
+				}
+				$this->sendResponse2(200,$this->messages['userUpdated']);
+			}
+		}
+	}
 	$api = new API;
 	$api->processApi();
 ?>

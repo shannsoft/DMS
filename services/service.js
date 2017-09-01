@@ -236,6 +236,16 @@ app.factory("userService", function ($http,CONFIG) {
       });
       return response
     },
+    getBillDetails : function(id){
+      var response = $http({
+        method: 'GET',
+        url: CONFIG.HTTP_HOST+'?reqmethod=getBillInfo&invoice_id='+id,
+        headers: {
+            'Accesstoken':localStorage.getItem('accessToken')
+        }
+      });
+      return response
+    },
     getPoDetails : function(id){
       var response = $http({
         method: 'GET',
@@ -245,6 +255,32 @@ app.factory("userService", function ($http,CONFIG) {
         }
       });
       return response
+    },
+    generateBill : function(obj){
+      var _serializedData = $.param({"reqmethod": 'generateBill', "bill_data":obj});
+      var response = $http({
+          method: 'POST',
+          url: CONFIG.HTTP_HOST,
+          data : _serializedData,
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'Accesstoken':localStorage.getItem('accessToken')
+          }
+      });
+      return response;
+    },
+    updateBill : function(obj){
+      var _serializedData = $.param({"reqmethod": 'updateBill', "bill_data":obj});
+      var response = $http({
+        method: 'POST',
+        url: CONFIG.HTTP_HOST,
+        data : _serializedData,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accesstoken':localStorage.getItem('accessToken')
+        }
+      });
+      return response;
     },
     getUser: function (id) {
       var response = $http.get(CONFIG.HTTP_HOST+"/?reqmethod=getUserById&id="+id);

@@ -150,7 +150,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
   })
   .state('bill', {
     templateUrl: 'views/purchaseOrder/bill.html',
-    url: '/bill/:poId',
+    url: '/bill/:poId/:invoiceId',
     controller:'QuotController',
     // resolve: {
     //   loggedout: checkLoggedout

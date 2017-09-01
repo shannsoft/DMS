@@ -3,7 +3,7 @@
    Bill
   </h1>
   <button class="btn btn-default m-l-5 pull-right" ng-click="printBill('bill')"><i class="fa fa-print"></i> Print</button>
-  <button class="btn btn-primary m-l-5 pull-right" ui-sref="new-client"><i class="fa fa-cloud"></i> Save</button>
+  <button class="btn btn-primary m-l-5 pull-right" ng-click="updateBill()"><i class="fa fa-cloud"></i> Save</button>
 </section>
 <section class="content" ng-init="loadSelectedPo()">
   <div class="row">
@@ -26,32 +26,32 @@
 						Tel.No. 9861360059 <br/>
 						GSTIN/UIN : 21AADCT2536N2ZB . Dt - 28 Jun, 2017 </p>
 					</td>
-					<td colspan="4"><em>Invoice No.-GST/JSPL/011/17-18</em></td>
-		    		<td colspan="3"><em>Dated - {{currentDate | dateformat}}</em></td>
+					<td colspan="4"><em>Invoice No.-{{billDetails.invoice_no}}</em></td>
+		    		<td colspan="3"><em>Dated - {{billDetails.invoice_date | dateformat}}</em></td>
 				</tr>
 				<tr> 
-					<td colspan="4" style="width:10%"><em>Delivery Note:</em> <div class="inline-block" contenteditable data-directive ng-model="text"></div></td>
+					<td colspan="4" style="width:10%"><em>Delivery Note:</em> <div class="inline-block" contenteditable data-directive ng-model="billDetails.delivery_note"></div></td>
 					<td colspan="3"><em>Mode/Terms of Payment:100% payment</em></td>
 				</tr>
 				<tr> 
-					<td colspan="4"><em>Buyer's Order No.: {{poDetails.po_no}}</em></td>
-					<td colspan="3"><em>Dated - {{poDetails.po_date | dateformat}}</em></td>
+					<td colspan="4"><em>Buyer's Order No.: {{billDetails.po_no}}</em></td>
+					<td colspan="3"><em>Dated - {{billDetails.po_date | dateformat}}</em></td>
 				</tr>
 				<tr> 
 					<td rowspan="4" colspan="5">
-					<h4 class="m-t-0"><strong>{{poDetails.org_name}},</strong></h4>
-					 	<p>{{poDetails.address}}<br/></p>
-						GSTIN/UIN : <div class="inline-block" contenteditable data-directive ng-model="poDetails.gstn_no"></div>
+					<h4 class="m-t-0"><strong>{{billDetails.org_name}},</strong></h4>
+					 	<p>{{billDetails.address}}<br/></p>
+						GSTIN/UIN : <div class="inline-block" contenteditable data-directive ng-model="billDetails.gstn_no"></div>
 					</td>
-					<td colspan="4"><em>Despatch Document No.</em><div class="inline-block" contenteditable data-directive ng-model="poDetails.doc_no"></div></td>
-					<td colspan="3"><em>Delivery Note Date- </em><div class="inline-block" contenteditable data-directive ng-model="poDetails.delivery_note_date"></div></td>
+					<td colspan="4"><em>Despatch Document No.</em><div class="inline-block" contenteditable data-directive ng-model="billDetails.dis_doc_no"></div></td>
+					<td colspan="3"><em>Delivery Note Date- </em><div class="inline-block" contenteditable data-directive ng-model="billDetails.note_date"></div></td>
 				</tr>
 				<tr> 
-					<td colspan="3"><em>Despatched Through</em><div class="inline-block" contenteditable data-directive ng-model="poDetails.delivery_through"></div></td>
-					<td colspan="3"><em>Destination</em><div class="inline-block" contenteditable data-directive ng-model="poDetails.destination"></div>	</td>
+					<td colspan="3"><em>Despatched Through</em><div class="inline-block" contenteditable data-directive ng-model="billDetails.dispatch_through"></div></td>
+					<td colspan="3"><em>Destination</em><div class="inline-block" contenteditable data-directive ng-model="billDetails.destination"></div>	</td>
 				</tr>
 				<tr> 
-					<td colspan="6"><em>Terms of Delivery</em> <div class="inline-block" contenteditable data-directive ng-model="poDetails.terms"></div></td>
+					<td colspan="6"><em>Terms of Delivery</em> <div class="inline-block" contenteditable data-directive ng-model="billDetails.term_of_delivery"></div></td>
 				</tr>
 				<tr> 
 					<td height="20" colspan="6"></td>
@@ -69,14 +69,14 @@
 					<th><em>Disc%</em></th>
 					<th><em>Amount</em></th>
 				</tr>
-				<tr ng-repeat="bill in selected_po" class="text-center"> 
+				<tr ng-repeat="bill in billDetails.itemList" class="text-center"> 
 					<td>{{$index+1}}</td>
 					<td>{{bill.po_sl_no}}</td>
 					<td>{{bill.item_code}}</td>
 					<td>{{bill.description}}</td>
 					<td>{{bill.hsn_no}}</td>
 					<td>{{bill.tax}}%</td>
-					<td><div class="inline-block" contenteditable data-directive ng-model="bill.quantity" ng-change="billCalculation(bill)"></div></td>
+					<td><div class="inline-block" contenteditable data-directive ng-model="bill.unbilled_qty" ng-change="billCalculation(bill)"></div></td>
 					<td>{{bill.price}}</td>
 					<td>{{bill.uom}}</td>
 					<td>{{bill.discount}}</td>
@@ -117,7 +117,7 @@
 					<td>Rate %</td>
 					<td>Amount</td>
 				</tr>
-				<tr ng-repeat="(key, value) in selected_po | groupBy: 'hsn_no'" class="text-center"> 
+				<tr ng-repeat="(key, value) in billDetails.itemList | groupBy: 'hsn_no'" class="text-center"> 
 					<td colspan="6" class="text-center">{{key}}</td>
 					<td class="text-right">{{getVolumeSum(value,'amount').toFixed(2)}}</td>
 					<td>{{value[0].tax/2}}</td>
@@ -152,7 +152,7 @@
 				<tr>
 					<td colspan="3">Company's PAN </td>
 					<td colspan="3">AADCT2536N</td>
-					<td colspan="3">Branch & IFS Code</td>
+					<td colspan="3">Branch & IFSC Code</td>
 					<td colspan="3">KKBK0000493 </td>
 				</tr>
 				<tr> 

@@ -1,8 +1,8 @@
 app.controller("QuotController", function($scope, $rootScope, userService, $stateParams, Util, NgTableParams, $timeout, $uibModal, $state, UserModel) {
-	/*******************************************************/
+	   /*******************************************************/
   	/*******THIS FUNCTION IS USED TO LOAD ENQUIRY DET*******/
   	/*******************************************************/
-
+    $scope.billDetails = {};
     $scope.currentDate = moment();
   	$scope.loadEnqDetails = function(){
   		$rootScope.showPreloader = true;
@@ -235,41 +235,74 @@ app.controller("QuotController", function($scope, $rootScope, userService, $stat
           po_list: function () {
             return $scope.poDetails.itemList;
           },
-          po_id : function(){
-            return $stateParams.poId;
+          generateBill : function(){
+            return $scope.generateBill;
           }
         }
       })
+    }
+    $scope.generateBill = function(){
+      $scope.selected_item = UserModel.getSelectedItem();
+      $scope.selected_po = [];
+      angular.forEach($scope.selected_item,function(value){
+        angular.forEach($scope.poDetails.itemList,function(item){
+          if(value == item.po_sl_no){
+            var obj  = {
+              "po_det_id": item.po_details_id,
+              "price" : item.net_amount,
+              "quantity": item.unbilled_qty
+            }
+            $scope.selected_po.push(obj);
+          }
+        })
+      })
+      var obj = {
+        "po_id":$scope.poDetails.po_id,
+        "invoice_date":moment().format("YYYY-MM-DD"),
+        "gstn_no":$scope.poDetails.gstn_no,
+        "org_name":$scope.poDetails.org_name,
+      }
+      obj.itemList = $scope.selected_po;
+      userService.generateBill(obj).then(function(response){
+        $state.go('bill', {poId: $scope.poDetails.po_id,invoiceId:response.data.data.invoice_id});
+      },function(error){
+
+      });
     }
     /***************************************************************/
     /*******This is use to get selected po list for bill************/
     /***************************************************************/
     $scope.loadSelectedPo = function(){
+      $scope.selected_item = [];
       $rootScope.showPreloader = true;
-      var po_id = $stateParams.poId;
-      userService.getPoDetails(po_id).then(function(response){
+      var invoiceId = $stateParams.invoiceId;
+      userService.getBillDetails(invoiceId).then(function(response){
         $rootScope.showPreloader = false;
-        $scope.poDetails = response.data.data;
-        $scope.selected_item = UserModel.getSelectedItem();
+        $scope.billDetails = response.data.data;
+        $scope.loadPoDetails();
+        angular.forEach($scope.billDetails.itemList,function(item){
+          $scope.selected_item.push(item.po_sl_no);
+        })
+        console.log($scope.selected_item);
       },function(error){
         $rootScope.showPreloader = false;
       });
     }
     $scope.itemChanged = function(){
-      $scope.selected_po = [];
+      $scope.billDetails.itemList = [];
       angular.forEach($scope.selected_item,function(value){
-          angular.forEach($scope.poDetails.itemList,function(item){
-            if(value == item.po_sl_no){
-              $scope.selected_po.push(item);
-            }
-          })
+        angular.forEach($scope.poDetails.itemList,function(item){
+          if(value == item.po_sl_no){
+            $scope.billDetails.itemList.push(item);
+          }
+        })
       })
       $scope.priceCalculation();
     }
     $scope.priceCalculation = function(){
       $scope.taxable_amount = 0;
       $scope.tax_amount = 0;
-      angular.forEach( $scope.selected_po,function(item){
+      angular.forEach($scope.billDetails.itemList,function(item){
         $scope.taxable_amount += item.net_amount;
         $scope.tax_amount += item.tax_price;
       })
@@ -279,8 +312,8 @@ app.controller("QuotController", function($scope, $rootScope, userService, $stat
       $scope.itemChanged(); 
     });
     $scope.billCalculation = function(item){
-      if(item.quantity){
-        item.net_amount = item.quantity * item.price;
+      if(item.unbilled_qty){
+        item.net_amount = item.unbilled_qty * item.price;
         if(item.discount){
           item.net_amount = item.net_amount - (item.net_amount * (item.discount / 100));
         }
@@ -293,6 +326,15 @@ app.controller("QuotController", function($scope, $rootScope, userService, $stat
         item.tot_price = 0;
       }
       $scope.priceCalculation();
+    }
+    $scope.updateBill = function(){
+      $rootScope.showPreloader = true;
+      userService.updateBill($scope.billDetails).then(function(response){
+        $rootScope.showPreloader = false;
+        console.log(response);
+      },function(){
+        $rootScope.showPreloader = false; 
+      })
     }
     $scope.getVolumeSum = function(items,type) {
       if(type == 'amount'){
@@ -329,23 +371,23 @@ app.controller("QuotController", function($scope, $rootScope, userService, $stat
 })
 app.controller('QuotModalCtrl', function ($scope, $uibModalInstance,deleteQuotation,quotID) {
     $scope.ok = function () {
-        deleteQuotation(quotID);
-        $uibModalInstance.close();
+      deleteQuotation(quotID);
+      $uibModalInstance.close();
     };
     $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 });
-app.controller('BillModalCtrl', function ($scope, $uibModalInstance, $localStorage, $state, po_list, UserModel, po_id) {
+app.controller('BillModalCtrl', function ($scope, $uibModalInstance, $localStorage, $state, po_list, UserModel, generateBill) {
     $scope.po_list = po_list;
     $scope.ok = function () {
-        console.log($scope.selected_po);
-        UserModel.setSelectedItem($scope.selected_po);
-        $state.go('bill', {poId: po_id});
-
-        $uibModalInstance.close();
+      console.log($scope.selected_po);
+      UserModel.setSelectedItem($scope.selected_po);
+      generateBill();
+      //$state.go('bill', {poId: po_id});
+      $uibModalInstance.close();
     };
     $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
 });
