@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 09, 2017 at 05:42 PM
+-- Generation Time: Sep 20, 2017 at 03:10 PM
 -- Server version: 10.0.17-MariaDB
 -- PHP Version: 5.6.14
 
@@ -139,9 +139,16 @@ CREATE TABLE `invoice_details_table` (
   `inv_id` int(11) NOT NULL,
   `po_det_id` int(11) NOT NULL,
   `price` decimal(10,0) NOT NULL,
-  `tax` decimal(10,0) DEFAULT NULL,
-  `total` decimal(10,0) NOT NULL
+  `quantity` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `invoice_details_table`
+--
+
+INSERT INTO `invoice_details_table` (`inv_det_id`, `inv_id`, `po_det_id`, `price`, `quantity`) VALUES
+(15, 4, 9, '34740', 3),
+(16, 4, 10, '131625', 30);
 
 -- --------------------------------------------------------
 
@@ -152,15 +159,27 @@ CREATE TABLE `invoice_details_table` (
 CREATE TABLE `invoice_table` (
   `inv_id` int(11) NOT NULL,
   `inv_date` date NOT NULL,
+  `invoice_no` text,
   `po_id` int(11) NOT NULL,
-  `gstn_no` varchar(250) NOT NULL,
-  `price` float NOT NULL,
-  `tax_price` float NOT NULL,
-  `total_price` float NOT NULL,
-  `bill_path` text NOT NULL,
-  `invoice_id` int(11) NOT NULL,
-  `is_updated` int(11) NOT NULL DEFAULT '0'
+  `gstn_no` varchar(250) DEFAULT NULL,
+  `price` float DEFAULT NULL,
+  `tax_price` float DEFAULT NULL,
+  `total_price` float DEFAULT NULL,
+  `dis_doc_no` text,
+  `delivery_note` text,
+  `note_date` date DEFAULT NULL,
+  `dispatch_through` text,
+  `destination` text,
+  `term_of_delivery` text,
+  `is_deleted` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `invoice_table`
+--
+
+INSERT INTO `invoice_table` (`inv_id`, `inv_date`, `invoice_no`, `po_id`, `gstn_no`, `price`, `tax_price`, `total_price`, `dis_doc_no`, `delivery_note`, `note_date`, `dispatch_through`, `destination`, `term_of_delivery`, `is_deleted`) VALUES
+(4, '2017-09-01', 'GST/Canon/4/17-18', 6, '5454545uuuu', 0, 0, NULL, '4545454', 'sfasdf', '2017-01-05', '', 'Jajpur', 'Test terms', 0);
 
 -- --------------------------------------------------------
 
@@ -217,7 +236,6 @@ CREATE TABLE `purchase_order_table` (
 
 INSERT INTO `purchase_order_table` (`po_id`, `quot_id`, `po_no`, `po_date`) VALUES
 (4, 5, '4252523523', '2017-07-30'),
-(5, 8, '8787878798', '2017-08-08'),
 (6, 8, '8787878798', '2017-08-08'),
 (7, 9, '436546346356', '2017-08-10');
 
@@ -461,12 +479,12 @@ ALTER TABLE `enquiry_table`
 -- AUTO_INCREMENT for table `invoice_details_table`
 --
 ALTER TABLE `invoice_details_table`
-  MODIFY `inv_det_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `inv_det_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 --
 -- AUTO_INCREMENT for table `invoice_table`
 --
 ALTER TABLE `invoice_table`
-  MODIFY `inv_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `inv_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `purchase_order_details_table`
 --
